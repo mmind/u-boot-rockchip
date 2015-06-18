@@ -1099,6 +1099,7 @@ submit_control_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 
 struct int_queue {
 	int elementsize;
+	unsigned long pipe;
 	struct QH *first;
 	struct QH *current;
 	struct QH *last;
@@ -1154,7 +1155,7 @@ create_int_queue(struct usb_device *dev, unsigned long pipe, int queuesize,
 {
 	struct ehci_ctrl *ctrl = dev->controller;
 	struct int_queue *result = NULL;
-	int i;
+	uint32_t i, toggle;
 
 	/*
 	 * Interrupt transfers requiring several transactions are not supported
@@ -1194,6 +1195,7 @@ create_int_queue(struct usb_device *dev, unsigned long pipe, int queuesize,
 		goto fail1;
 	}
 	result->elementsize = elementsize;
+	result->pipe = pipe;
 	result->first = memalign(USB_DMA_MINALIGN,
 				 sizeof(struct QH) * queuesize);
 	if (!result->first) {
@@ -1210,6 +1212,8 @@ create_int_queue(struct usb_device *dev, unsigned long pipe, int queuesize,
 	}
 	memset(result->first, 0, sizeof(struct QH) * queuesize);
 	memset(result->tds, 0, sizeof(struct qTD) * queuesize);
+
+	toggle = usb_gettoggle(dev, usb_pipeendpoint(pipe), usb_pipeout(pipe));
 
 	for (i = 0; i < queuesize; i++) {
 		struct QH *qh = result->first + i;
@@ -1242,7 +1246,9 @@ create_int_queue(struct usb_device *dev, unsigned long pipe, int queuesize,
 		td->qt_altnext = cpu_to_hc32(QT_NEXT_TERMINATE);
 		debug("communication direction is '%s'\n",
 		      usb_pipein(pipe) ? "in" : "out");
-		td->qt_token = cpu_to_hc32((elementsize << 16) |
+		td->qt_token = cpu_to_hc32(
+			QT_TOKEN_DT(toggle) |
+			(elementsize << 16) |
 			((usb_pipein(pipe) ? 1 : 0) << 8) | /* IN/OUT token */
 			0x80); /* active */
 		td->qt_buffer[0] =
@@ -1257,6 +1263,7 @@ create_int_queue(struct usb_device *dev, unsigned long pipe, int queuesize,
 		    cpu_to_hc32((td->qt_buffer[0] + 0x4000) & ~0xfff);
 
 		*buf = buffer + i * elementsize;
+		toggle ^= 1;
 	}
 
 	flush_dcache_range((unsigned long)buffer,
@@ -1310,6 +1317,8 @@ void *poll_int_queue(struct usb_device *dev, struct int_queue *queue)
 {
 	struct QH *cur = queue->current;
 	struct qTD *cur_td;
+	uint32_t token, toggle;
+	unsigned long pipe = queue->pipe;
 
 	/* depleted queue */
 	if (cur == NULL) {
@@ -1320,12 +1329,15 @@ void *poll_int_queue(struct usb_device *dev, struct int_queue *queue)
 	cur_td = &queue->tds[queue->current - queue->first];
 	invalidate_dcache_range((unsigned long)cur_td,
 				ALIGN_END_ADDR(struct qTD, cur_td, 1));
-	if (QT_TOKEN_GET_STATUS(hc32_to_cpu(cur_td->qt_token)) &
-			QT_TOKEN_STATUS_ACTIVE) {
-		debug("Exit poll_int_queue with no completed intr transfer. token is %x\n",
-		      hc32_to_cpu(cur_td->qt_token));
+	token = hc32_to_cpu(cur_td->qt_token);
+	if (QT_TOKEN_GET_STATUS(token) & QT_TOKEN_STATUS_ACTIVE) {
+		debug("Exit poll_int_queue with no completed intr transfer. token is %x\n", token);
 		return NULL;
 	}
+
+	toggle = QT_TOKEN_GET_DT(token);
+	usb_settoggle(dev, usb_pipeendpoint(pipe), usb_pipeout(pipe), toggle);
+
 	if (!(cur->qh_link & QH_LINK_TERMINATE))
 		queue->current++;
 	else
@@ -1336,7 +1348,7 @@ void *poll_int_queue(struct usb_device *dev, struct int_queue *queue)
 					       queue->elementsize));
 
 	debug("Exit poll_int_queue with completed intr transfer. token is %x at %p (first at %p)\n",
-	      hc32_to_cpu(cur_td->qt_token), cur, queue->first);
+	      token, cur, queue->first);
 	return cur->buffer;
 }
 
