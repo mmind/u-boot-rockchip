@@ -27,7 +27,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 struct chan_info {
 	struct dw_upctl *pctl;
-	struct rk3288_ddr_publ *publ;
+	struct dw_publ *publ;
 	struct rk3288_msch *msch;
 };
 
@@ -79,7 +79,7 @@ static void ddr_phy_ctl_reset(struct rk3288_cru *cru, u32 ch, u32 n)
 }
 
 static void phy_pctrl_reset(struct rk3288_cru *cru,
-			    struct rk3288_ddr_publ *publ,
+			    struct dw_publ *publ,
 			    u32 channel)
 {
 	int i;
@@ -102,7 +102,7 @@ static void phy_pctrl_reset(struct rk3288_cru *cru,
 	udelay(10);
 }
 
-static void phy_dll_bypass_set(struct rk3288_ddr_publ *publ,
+static void phy_dll_bypass_set(struct dw_publ *publ,
 	u32 freq)
 {
 	int i;
@@ -250,7 +250,7 @@ static void pctl_cfg(u32 channel, struct dw_upctl *pctl,
 static void phy_cfg(const struct chan_info *chan, u32 channel,
 		    const struct rk3288_sdram_params *sdram_params)
 {
-	struct rk3288_ddr_publ *publ = chan->publ;
+	struct dw_publ *publ = chan->publ;
 	struct rk3288_msch *msch = chan->msch;
 	uint ddr_freq_mhz = sdram_params->base.ddr_freq / 1000000;
 	u32 dinit2, tmp;
@@ -314,7 +314,7 @@ static void phy_cfg(const struct chan_info *chan, u32 channel,
 	}
 }
 
-static void phy_init(struct rk3288_ddr_publ *publ)
+static void phy_init(struct dw_publ *publ)
 {
 	setbits_le32(&publ->pir, PIR_INIT | PIR_DLLSRST
 		| PIR_DLLLOCK | PIR_ZCAL | PIR_ITMSRST | PIR_CLRSR);
@@ -341,7 +341,7 @@ static inline void send_command_op(struct dw_upctl *pctl,
 		     (op & LPDDR2_OP_MASK) << LPDDR2_OP_SHIFT);
 }
 
-static void memory_init(struct rk3288_ddr_publ *publ,
+static void memory_init(struct dw_publ *publ,
 			u32 dramtype)
 {
 	setbits_le32(&publ->pir,
@@ -354,7 +354,7 @@ static void memory_init(struct rk3288_ddr_publ *publ,
 		;
 }
 
-static void move_to_config_state(struct rk3288_ddr_publ *publ,
+static void move_to_config_state(struct dw_publ *publ,
 				 struct dw_upctl *pctl)
 {
 	unsigned int state;
@@ -395,7 +395,7 @@ static void set_bandwidth_ratio(const struct chan_info *chan, u32 channel,
 				u32 n, struct rk3288_grf *grf)
 {
 	struct dw_upctl *pctl = chan->pctl;
-	struct rk3288_ddr_publ *publ = chan->publ;
+	struct dw_publ *publ = chan->publ;
 	struct rk3288_msch *msch = chan->msch;
 
 	if (n == 1) {
@@ -437,7 +437,7 @@ static int data_training(const struct chan_info *chan, u32 channel,
 	u32 rank;
 	int i;
 	u32 step[2] = { PIR_QSTRN, PIR_RVTRN };
-	struct rk3288_ddr_publ *publ = chan->publ;
+	struct dw_publ *publ = chan->publ;
 	struct dw_upctl *pctl = chan->pctl;
 
 	/* disable auto refresh */
@@ -494,7 +494,7 @@ static int data_training(const struct chan_info *chan, u32 channel,
 
 static void move_to_access_state(const struct chan_info *chan)
 {
-	struct rk3288_ddr_publ *publ = chan->publ;
+	struct dw_publ *publ = chan->publ;
 	struct dw_upctl *pctl = chan->pctl;
 	unsigned int state;
 
@@ -535,7 +535,7 @@ static void move_to_access_state(const struct chan_info *chan)
 static void dram_cfg_rbc(const struct chan_info *chan, u32 chnum,
 			 const struct rk3288_sdram_params *sdram_params)
 {
-	struct rk3288_ddr_publ *publ = chan->publ;
+	struct dw_publ *publ = chan->publ;
 
 	if (sdram_params->ch[chnum].bk == 3)
 		clrsetbits_le32(&publ->dcr, PDQ_MASK << PDQ_SHIFT,
@@ -602,7 +602,7 @@ static int sdram_init(const struct dram_info *dram,
 	for (channel = 0; channel < 2; channel++) {
 		const struct chan_info *chan = &dram->chan[channel];
 		struct dw_upctl *pctl = chan->pctl;
-		struct rk3288_ddr_publ *publ = chan->publ;
+		struct dw_publ *publ = chan->publ;
 
 		phy_pctrl_reset(dram->cru, publ, channel);
 		phy_dll_bypass_set(publ, sdram_params->base.ddr_freq);
