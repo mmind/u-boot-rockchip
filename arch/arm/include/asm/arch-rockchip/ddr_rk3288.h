@@ -217,35 +217,35 @@ struct rk3288_msch {
 };
 check_member(rk3288_msch, devtodev, 0x003c);
 
-/* PCT_DFISTCFG0 */
+/* PCTL_DFISTCFG0 */
 #define DFI_INIT_START			(1 << 0)
 
-/* PCT_DFISTCFG1 */
+/* PCTL_DFISTCFG1 */
 #define DFI_DRAM_CLK_SR_EN		(1 << 0)
 #define DFI_DRAM_CLK_DPD_EN		(1 << 1)
 
-/* PCT_DFISTCFG2 */
+/* PCTL_DFISTCFG2 */
 #define DFI_PARITY_INTR_EN		(1 << 0)
 #define DFI_PARITY_EN			(1 << 1)
 
-/* PCT_DFILPCFG0 */
+/* PCTL_DFILPCFG0 */
 #define TLP_RESP_TIME_SHIFT		16
 #define LP_SR_EN			(1 << 8)
 #define LP_PD_EN			(1 << 0)
 
-/* PCT_DFITCTRLDELAY */
+/* PCTL_DFITCTRLDELAY */
 #define TCTRL_DELAY_TIME_SHIFT		0
 
-/* PCT_DFITPHYWRDATA */
+/* PCTL_DFITPHYWRDATA */
 #define TPHY_WRDATA_TIME_SHIFT		0
 
-/* PCT_DFITPHYRDLAT */
+/* PCTL_DFITPHYRDLAT */
 #define TPHY_RDLAT_TIME_SHIFT		0
 
-/* PCT_DFITDRAMCLKDIS */
+/* PCTL_DFITDRAMCLKDIS */
 #define TDRAM_CLK_DIS_TIME_SHIFT	0
 
-/* PCT_DFITDRAMCLKEN */
+/* PCTL_DFITDRAMCLKEN */
 #define TDRAM_CLK_EN_TIME_SHIFT		0
 
 /* PCTL_DFIODTCFG */
@@ -270,7 +270,7 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define DQSRTT				(1 << 9)
 #define DQRTT				(1 << 10)
 
-/* PIR */
+/* PUBL_PIR */
 #define PIR_INIT			(1 << 0)
 #define PIR_DLLSRST			(1 << 1)
 #define PIR_DLLLOCK			(1 << 2)
@@ -288,13 +288,13 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define PIR_ZCALBYP			(1 << 30)
 #define PIR_INITBYP			(1u << 31)
 
-/* PGCR */
+/* PUBL_PGCR */
 #define PGCR_DFTLMT_SHIFT		3
 #define PGCR_DFTCMP_SHIFT		2
 #define PGCR_DQSCFG_SHIFT		1
 #define PGCR_ITMDMD_SHIFT		0
 
-/* PGSR */
+/* PUBL_PGSR */
 #define PGSR_IDONE			(1 << 0)
 #define PGSR_DLDONE			(1 << 1)
 #define PGSR_ZCDONE			(1 << 2)
@@ -306,20 +306,20 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define PGSR_RVERR			(1 << 8)
 #define PGSR_RVEIRR			(1 << 9)
 
-/* PTR0 */
+/* PUBL_PTR0 */
 #define PRT_ITMSRST_SHIFT		18
 #define PRT_DLLLOCK_SHIFT		6
 #define PRT_DLLSRST_SHIFT		0
 
-/* PTR1 */
+/* PUBL_PTR1 */
 #define PRT_DINIT0_SHIFT		0
 #define PRT_DINIT1_SHIFT		19
 
-/* PTR2 */
+/* PUBL_PTR2 */
 #define PRT_DINIT2_SHIFT		0
 #define PRT_DINIT3_SHIFT		17
 
-/* DCR */
+/* PUBL_DCR */
 #define DDRMD_LPDDR			0
 #define DDRMD_DDR			1
 #define DDRMD_DDR2			2
@@ -330,32 +330,32 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define PDQ_MASK			7
 #define PDQ_SHIFT			4
 
-/* DXCCR */
+/* PUBL_DXCCR */
 #define DQSNRES_MASK			0xf
 #define DQSNRES_SHIFT			8
 #define DQSRES_MASK			0xf
 #define DQSRES_SHIFT			4
 
-/* DTPR */
+/* PUBL_DTPR */
 #define TDQSCKMAX_SHIFT			27
 #define TDQSCKMAX_MASK			7
 #define TDQSCK_SHIFT			24
 #define TDQSCK_MASK			7
 
-/* DSGCR */
+/* PUBL_DSGCR */
 #define DQSGX_SHIFT			5
 #define DQSGX_MASK			7
 #define DQSGE_SHIFT			8
 #define DQSGE_MASK			7
 
-/* SCTL */
+/* PCTL_SCTL */
 #define INIT_STATE			0
 #define CFG_STATE			1
 #define GO_STATE			2
 #define SLEEP_STATE			3
 #define WAKEUP_STATE			4
 
-/* STAT */
+/* PCTL_STAT */
 #define LP_TRIG_SHIFT			4
 #define LP_TRIG_MASK			7
 #define PCTL_STAT_MSK			7
@@ -368,17 +368,17 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define LOW_POWER_ENTRY_REQ		6
 #define LOW_POWER_EXIT_REQ		7
 
-/* ZQCR*/
+/* PUBL_ZQCR*/
 #define PD_OUTPUT_SHIFT			0
 #define PU_OUTPUT_SHIFT			5
 #define PD_ONDIE_SHIFT			10
 #define PU_ONDIE_SHIFT			15
 #define ZDEN_SHIFT			28
 
-/* DDLGCR */
+/* PUBL_DDLGCR */
 #define SBIAS_BYPASS			(1 << 23)
 
-/* MCFG */
+/* PCTL_MCFG */
 #define MDDR_LPDDR2_CLK_STOP_IDLE_SHIFT	24
 #define PD_IDLE_SHIFT			8
 #define MDDR_EN				(2 << 22)
@@ -399,13 +399,13 @@ check_member(rk3288_msch, devtodev, 0x003c);
 #define PD_TYPE_SHIFT			16
 #define BURSTLENGTH_SHIFT		20
 
-/* POWCTL */
+/* PCTL_POWCTL */
 #define POWER_UP_START			(1 << 0)
 
-/* POWSTAT */
+/* PCTL_POWSTAT */
 #define POWER_UP_DONE			(1 << 0)
 
-/* MCMD */
+/* PCTL_MCMD */
 enum {
 	DESELECT_CMD			= 0,
 	PREA_CMD,
@@ -425,7 +425,7 @@ enum {
 
 #define START_CMD			(1u << 31)
 
-/* DEVTODEV */
+/* MSCH_DEVTODEV */
 #define BUSWRTORD_SHIFT			4
 #define BUSRDTOWR_SHIFT			2
 #define BUSRDTORD_SHIFT			0
