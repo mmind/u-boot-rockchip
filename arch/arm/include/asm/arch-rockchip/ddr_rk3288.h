@@ -7,8 +7,8 @@
 #ifndef _ASM_ARCH_DDR_RK3288_H
 #define _ASM_ARCH_DDR_RK3288_H
 
-#include <arm/arch/dw_upctl.h>
-#include <arm/arch/dw_publ.h>
+#include <asm/arch/dw_upctl.h>
+#include <asm/arch/dw_publ.h>
 
 struct rk3288_msch {
 	u32 coreid;
