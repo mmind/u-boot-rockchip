@@ -69,7 +69,7 @@ static void configure_l2ctlr(void)
 
 void init_timer(void)
 {
-	struct rockchip_timer * const timer7_ptr = (void *)TIMER7_BASE;
+	struct rockchip_timer * const timer7_ptr = (void *)RK3288_TIMER7_BASE;
 
 	writel(0xffffffff, &timer7_ptr->timer_load_count0);
 	writel(0xffffffff, &timer7_ptr->timer_load_count1);
