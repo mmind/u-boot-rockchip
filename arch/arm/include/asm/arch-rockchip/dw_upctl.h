@@ -155,7 +155,6 @@ struct dw_upctl {
 };
 check_member(dw_upctl, iptr, 0x03fc);
 
-
 /* PCTL_DFISTCFG0 */
 #define DFI_INIT_START			(1 << 0)
 
@@ -260,5 +259,43 @@ enum {
 #define LPDDR2_OP_MASK			0xff
 
 #define START_CMD			(1u << 31)
+
+struct dw_upctl_sdram_timing {
+	u32 togcnt1u;
+	u32 tinit;
+	u32 trsth;
+	u32 togcnt100n;
+	u32 trefi;
+	u32 tmrd;
+	u32 trfc;
+	u32 trp;
+	u32 trtw;
+	u32 tal;
+	u32 tcl;
+	u32 tcwl;
+	u32 tras;
+	u32 trc;
+	u32 trcd;
+	u32 trrd;
+	u32 trtp;
+	u32 twr;
+	u32 twtr;
+	u32 texsr;
+	u32 txp;
+	u32 txpdll;
+	u32 tzqcs;
+	u32 tzqcsi;
+	u32 tdqs;
+	u32 tcksre;
+	u32 tcksrx;
+	u32 tcke;
+	u32 tmod;
+	u32 trstl;
+	u32 tzqcl;
+	u32 tmrr;
+	u32 tckesr;
+	u32 tdpd;
+};
+check_member(dw_upctl_sdram_timing, tdpd, 0x144 - 0xc0);
 
 #endif
