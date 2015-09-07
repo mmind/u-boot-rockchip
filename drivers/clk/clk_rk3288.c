@@ -95,7 +95,7 @@ enum {
 	PERI_ACLK_DIV_SHIFT	= 0,
 	PERI_ACLK_DIV_MASK	= 0x1f,
 
-	/* CLKSEL37 */
+	/* MODE_CON */
 	DPLL_MODE_MASK		= 0x3,
 	DPLL_MODE_SHIFT		= 4,
 	DPLL_MODE_SLOW		= 0,
@@ -565,7 +565,7 @@ static const char *const clk_name[CLK_COUNT] = {
 	"dpll",
 	"cpll",
 	"gpll",
-	"mpll",
+	"npll",
 };
 
 static int rk3288_clk_bind(struct udevice *dev)
