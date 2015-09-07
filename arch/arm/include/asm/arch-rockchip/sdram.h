@@ -29,6 +29,8 @@ struct rk3288_sdram_channel {
 	u8 cs1_row;
 };
 
+#define rk3188_sdram_channel rk3288_sdram_channel
+
 struct rk3288_base_params {
 	u32 noc_timing;
 	u32 noc_activate;
@@ -39,11 +41,21 @@ struct rk3288_base_params {
 	u32 odt;
 };
 
+#define rk3188_base_params rk3288_base_params
+
 struct rk3288_sdram_params {
 	struct rk3288_sdram_channel ch[2];
 	struct dw_upctl_sdram_timing pctl_timing;
 	struct dw_publ_sdram_timing phy_timing;
 	struct rk3288_base_params base;
+	int num_channels;
+};
+
+struct rk3188_sdram_params {
+	struct rk3188_sdram_channel ch[1];
+	struct dw_upctl_sdram_timing pctl_timing;
+	struct dw_publ_sdram_timing phy_timing;
+	struct rk3188_base_params base;
 	int num_channels;
 };
 

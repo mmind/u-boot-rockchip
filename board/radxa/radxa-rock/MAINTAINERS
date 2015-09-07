@@ -1,0 +1,6 @@
+RADXA_ROCK
+M:	Heiko Stuebner <heiko@sntech.de>
+S:	Maintained
+F:	board/radxa/radxa-rock
+F:	include/configs/radxa-rock.h
+F:	configs/radxa-rock_defconfig

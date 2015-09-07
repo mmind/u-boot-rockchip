@@ -16,6 +16,7 @@ dtb-$(CONFIG_EXYNOS5) += exynos5250-arndale.dtb \
 	exynos5800-peach-pi.dtb \
 	exynos5422-odroidxu3.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += \
+	rk3188-radxarock.dtb \
 	rk3288-firefly.dtb \
 	rk3288-jerry.dtb
 dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \

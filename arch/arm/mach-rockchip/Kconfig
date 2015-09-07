@@ -1,5 +1,14 @@
 if ARCH_ROCKCHIP
 
+config ROCKCHIP_RK3188
+	bool "Support Rockchip RK3188"
+	help
+	  The Rockchip RK3188 is a ARM-based SoC with a quad-core Cortex-A9
+	  including NEON and GPU, 512KB L2 cache, Mali-400MP graphics, two
+	  video interfaces, several DDR3 options and video codec support.
+	  Peripherals include 100MBit Ethernet, USB2 host and OTG, SDIO, I2S,
+	  UARTs, SPI, I2C and PWMs.
+
 config ROCKCHIP_RK3288
 	bool "Support Rockchip RK3288"
 	help
@@ -36,6 +45,7 @@ config DM_GPIO
 config ROCKCHIP_SERIAL
 	default y
 
+source "arch/arm/mach-rockchip/rk3188/Kconfig"
 source "arch/arm/mach-rockchip/rk3288/Kconfig"
 
 endif

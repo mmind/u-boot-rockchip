@@ -10,4 +10,5 @@ else
 obj-y += board.o
 endif
 obj-y += common.o
+obj-$(CONFIG_ROCKCHIP_RK3188) += rk3188/
 obj-$(CONFIG_ROCKCHIP_RK3288) += rk3288/

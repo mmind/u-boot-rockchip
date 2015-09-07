@@ -1,0 +1,15 @@
+if TARGET_RADXA_ROCK
+
+config SYS_BOARD
+	default "radxa-rock"
+
+config SYS_VENDOR
+	default "radxa"
+
+config SYS_CONFIG_NAME
+	default "radxa-rock"
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+
+endif

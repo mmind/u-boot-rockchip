@@ -11,6 +11,7 @@
 #define RK_SETBITS(set)			RK_CLRSETBITS(0, set)
 #define RK_CLRBITS(clr)			RK_CLRSETBITS(clr, 0)
 
+#define RK3188_TIMER3_BASE		0x2000e000
 #define RK3288_TIMER7_BASE		0xff810020
 
 #define rk_clrsetreg(addr, clr, set)	writel((clr) << 16 | (set), addr)
