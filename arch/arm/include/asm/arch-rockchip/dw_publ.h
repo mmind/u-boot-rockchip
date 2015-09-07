@@ -159,4 +159,11 @@ check_member(dw_publ, datx8[3].dxdqstr, 0x0294);
 /* PUBL_DDLGCR */
 #define SBIAS_BYPASS			(1 << 23)
 
+struct dw_publ_sdram_timing {
+	u32 dtpr0;
+	u32 dtpr1;
+	u32 dtpr2;
+	u32 mr[4];
+};
+
 #endif

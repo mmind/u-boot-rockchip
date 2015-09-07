@@ -10,6 +10,7 @@
 #define _ASM_ARCH_RK3288_SDRAM_H__
 
 #include <asm/arch/dw_upctl.h>
+#include <asm/arch/dw_publ.h>
 
 enum {
 	DDR3 = 3,
@@ -28,13 +29,6 @@ struct rk3288_sdram_channel {
 	u8 cs1_row;
 };
 
-struct rk3288_sdram_phy_timing {
-	u32 dtpr0;
-	u32 dtpr1;
-	u32 dtpr2;
-	u32 mr[4];
-};
-
 struct rk3288_base_params {
 	u32 noc_timing;
 	u32 noc_activate;
@@ -48,7 +42,7 @@ struct rk3288_base_params {
 struct rk3288_sdram_params {
 	struct rk3288_sdram_channel ch[2];
 	struct dw_upctl_sdram_timing pctl_timing;
-	struct rk3288_sdram_phy_timing phy_timing;
+	struct dw_publ_sdram_timing phy_timing;
 	struct rk3288_base_params base;
 	int num_channels;
 };
