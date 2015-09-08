@@ -105,7 +105,7 @@ config SPL_PINCONF
 
 if PINCTRL || SPL_PINCTRL
 
-config ROCKCHIP_PINCTRL
+config ROCKCHIP_RK3288_PINCTRL
 	bool "Rockchip pin control driver"
 	depends on DM
 	help
