@@ -18,6 +18,15 @@ config ROCKCHIP_RK3288
 	  and video codec support. Peripherals include Gigabit Ethernet,
 	  USB2 host and OTG, SDIO, I2S, UART,s, SPI, I2C and PWMs.
 
+config ROCKCHIP_RKIMAGE_HEADER
+	string
+	help
+	  This option should contain the SoC name to build the directory
+	  arch/<CONFIG_SYS_ARCH>/cpu/<CONFIG_SYS_CPU>/<CONFIG_SYS_SOC>.
+
+	  This is optional.  For those targets without the SoC directory,
+	  leave this option empty.
+
 config SYS_MALLOC_F
 	default y
 

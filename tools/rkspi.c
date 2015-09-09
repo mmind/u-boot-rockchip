@@ -10,6 +10,7 @@
 #include "imagetool.h"
 #include <image.h>
 #include <rc4.h>
+#include <linux/kconfig.h>
 #include "mkimage.h"
 #include "rkcommon.h"
 
@@ -53,7 +54,7 @@ static void rkspi_set_header(void *buf, struct stat *sbuf, int ifd,
 		       size);
 	}
 
-	memcpy(buf + RKSPI_SPL_HDR_START, "RK32", 4);
+	memcpy(buf + RKSPI_SPL_HDR_START, CONFIG_ROCKCHIP_RKIMAGE_HEADER, 4);
 
 	/*
 	 * Spread the image out so we only use the first 2KB of each 4KB

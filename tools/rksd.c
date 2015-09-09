@@ -10,6 +10,7 @@
 #include "imagetool.h"
 #include <image.h>
 #include <rc4.h>
+#include <linux/kconfig.h>
 #include "mkimage.h"
 #include "rkcommon.h"
 
@@ -50,7 +51,7 @@ static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
 		       size);
 	}
 
-	memcpy(buf + RKSD_SPL_HDR_START, "RK32", 4);
+	memcpy(buf + RKSD_SPL_HDR_START, CONFIG_ROCKCHIP_RKIMAGE_HEADER, 4);
 }
 
 static int rksd_extract_subimage(void *buf,  struct image_tool_params *params)

@@ -9,6 +9,7 @@
 
 #include "imagetool.h"
 #include <image.h>
+#include <linux/kconfig.h>
 
 static uint32_t header;
 
@@ -30,7 +31,7 @@ static void rkimage_print_header(const void *buf)
 static void rkimage_set_header(void *buf, struct stat *sbuf, int ifd,
 			       struct image_tool_params *params)
 {
-	memcpy(buf, "RK32", 4);
+	memcpy(buf, CONFIG_ROCKCHIP_RKIMAGE_HEADER, 4);
 }
 
 static int rkimage_extract_subimage(void *buf, struct image_tool_params *params)

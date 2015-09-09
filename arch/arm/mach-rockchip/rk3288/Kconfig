@@ -19,6 +19,9 @@ config TARGET_CHROMEBOOK_JERRY
 config SYS_SOC
 	default "rockchip"
 
+config ROCKCHIP_RKIMAGE_HEADER
+	default "RK32"
+
 source "board/google/chromebook_jerry/Kconfig"
 
 source "board/firefly/firefly-rk3288/Kconfig"
