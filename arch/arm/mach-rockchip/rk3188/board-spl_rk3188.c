@@ -69,7 +69,8 @@ void board_init_f(ulong dummy)
 #define GRF_BASE	0xff770000
 	struct rk3188_grf * const grf = (void *)GRF_BASE;
 
-	rk_clrsetreg(&grf->gpio1b_iomux, GPIO1B1_MASK << GPIO1B1_SHIFT |
+	rk_clrsetreg(&grf->gpio1b_iomux,
+		     GPIO1B1_MASK << GPIO1B1_SHIFT |
 		     GPIO1B0_MASK << GPIO1B0_SHIFT,
 		     GPIO1B1_UART2_SOUT << GPIO1B1_SHIFT |
 		     GPIO1B0_UART2_SIN << GPIO1B0_SHIFT);
