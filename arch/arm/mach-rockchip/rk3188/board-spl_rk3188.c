@@ -66,7 +66,7 @@ void board_init_f(ulong dummy)
 #ifdef EARLY_UART
 #include <asm/arch/grf_rk3188.h>
 	/* Enable early UART on the RK3188 */
-#define GRF_BASE	0xff770000
+#define GRF_BASE	0x20008000
 	struct rk3188_grf * const grf = (void *)GRF_BASE;
 
 	rk_clrsetreg(&grf->gpio1b_iomux,
