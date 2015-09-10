@@ -243,6 +243,7 @@ int NS16550_tstc(NS16550_t com_port)
 #endif /* CONFIG_NS16550_MIN_FUNCTIONS */
 
 #ifdef CONFIG_DEBUG_UART_NS16550
+#ifndef CONFIG_DEBUG_LL
 
 #include <debug_uart.h>
 
@@ -291,7 +292,12 @@ static inline void _debug_uart_putc(int ch)
 
 DEBUG_UART_FUNCS
 
-#endif
+#else
+
+void debug_uart_init(void) {}
+
+#endif /* CONFIG_DEBUG_LL */
+#endif /* CONFIG_DEBUG_UART_NS16550 */
 
 #ifdef CONFIG_DM_SERIAL
 static int ns16550_serial_putc(struct udevice *dev, const char ch)
