@@ -75,7 +75,7 @@ static int configure_emmc(struct udevice *pinctrl)
 	struct gpio_desc desc;
 	int ret;
 
-	pinctrl_request_noflags(pinctrl, PERIPH_ID_EMMC);
+//	pinctrl_request_noflags(pinctrl, PERIPH_ID_EMMC);
 
 	/*
 	 * TODO(sjg@chromium.org): Pick this up from device tree or perhaps
@@ -145,7 +145,7 @@ void spl_board_init(void)
 		debug("%s: Cannot find pinctrl device\n", __func__);
 		goto err;
 	}
-	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_SDCARD);
+//	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_SDCARD);
 	if (ret) {
 		debug("%s: Failed to set up SD card\n", __func__);
 		goto err;
@@ -157,7 +157,7 @@ void spl_board_init(void)
 	}
 
 	/* Enable debug UART */
-	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_UART_DBG);
+//	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_UART_DBG);
 	if (ret) {
 		debug("%s: Failed to set up console UART\n", __func__);
 		goto err;

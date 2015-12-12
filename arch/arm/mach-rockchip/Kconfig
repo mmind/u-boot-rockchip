@@ -1,5 +1,8 @@
 if ARCH_ROCKCHIP
 
+choice
+	prompt "Rockchip SoC select"
+
 config ROCKCHIP_RK3188
 	bool "Support Rockchip RK3188"
 	help
@@ -17,6 +20,8 @@ config ROCKCHIP_RK3288
 	  video interfaces supporting HDMI and eDP, several DDR3 options
 	  and video codec support. Peripherals include Gigabit Ethernet,
 	  USB2 host and OTG, SDIO, I2S, UART,s, SPI, I2C and PWMs.
+
+endchoice
 
 config ROCKCHIP_RKIMAGE_HEADER
 	string
