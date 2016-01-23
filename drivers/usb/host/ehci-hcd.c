@@ -137,6 +137,8 @@ void __ehci_set_usbmode(int index)
 	tmp |= USBMODE_CM_HC;
 #if defined(CONFIG_EHCI_MMIO_BIG_ENDIAN)
 	tmp |= USBMODE_BE;
+#else
+	tmp &= ~USBMODE_BE;
 #endif
 	ehci_writel(reg_ptr, tmp);
 }
