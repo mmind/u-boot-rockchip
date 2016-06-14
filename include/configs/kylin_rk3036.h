@@ -12,6 +12,8 @@
 
 #ifndef CONFIG_SPL_BUILD
 
+#define CONFIG_SYS_DCACHE_OFF
+
 /* Store env in emmc */
 #undef CONFIG_ENV_SIZE
 #define CONFIG_ENV_SIZE			SZ_32K
@@ -43,13 +45,43 @@
 	"name=persist,size=4M,uuid=${uuid_gpt_persist};" \
 	"name=userdata,size=-,uuid=${uuid_gpt_userdata};\0" \
 
+#undef CONFIG_BOOTARGS
 #undef CONFIG_EXTRA_ENV_SETTINGS
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"partitions=" PARTS_DEFAULT \
+	"loadaddr=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
+	"bootargs=earlyprintk console=ttyS2,115200n8 init=/sbin/init ip=dhcp nfsroot=192.168.140.1:/home/devel/nfs/rootfs-kylin root=/dev/nfs rw noinitrd\0" \
 
 #endif
 
 #define CONFIG_BOARD_LATE_INIT
 #define CONFIG_PREBOOT
+
+#define CONFIG_USB_HOST_ETHER	/* Enable USB Ethernet adapters */
+
+#define CONFIG_USB_ETHER_ASIX
+
+#define CONFIG_BOOTP_SUBNETMASK
+#define CONFIG_BOOTP_GATEWAY
+#define CONFIG_BOOTP_HOSTNAME
+#define CONFIG_BOOTP_BOOTPATH
+
+/* Enable atags */
+#define CONFIG_SYS_BOOTPARAMS_LEN	(64*1024)
+#define CONFIG_INITRD_TAG
+#define CONFIG_SETUP_MEMORY_TAGS
+#define CONFIG_CMDLINE_TAG
+
+
+/*#define CONFIG_IPADDR		10.0.0.2  (replace with your value)
+*/
+#define CONFIG_SERVERIP		192.168.140.1
+#define CONFIG_BOOTFILE		"hstuebner/kylin.vmlinuz"
+
+#undef CONFIG_BOOTCOMMAND
+#define CONFIG_BOOTCOMMAND \
+	"usb start; " \
+	"dhcp ${loadaddr}; " \
+	"bootm; " \
 
 #endif
