@@ -11,6 +11,8 @@
 #include <malloc.h>
 #include <usbroothubdes.h>
 #include <asm/io.h>
+#include <asm/arch/gpio.h>
+#include <asm/arch/usbhost.h>
 
 #include "dwc2.h"
 
@@ -1010,6 +1012,9 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
 	uint32_t snpsid;
 	int i, j;
 
+	gpio_direction_output(GPIO_BANK0 | GPIO_D1, 1);
+	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 1);
+
 	root_hub_devnum = 0;
 
 	snpsid = readl(&regs->gsnpsid);
@@ -1049,5 +1054,9 @@ int usb_lowlevel_stop(int index)
 			DWC2_HPRT0_PRTCONNDET | DWC2_HPRT0_PRTENCHNG |
 			DWC2_HPRT0_PRTOVRCURRCHNG,
 			DWC2_HPRT0_PRTRST);
+
+	gpio_direction_output(GPIO_BANK0 | GPIO_D1, 0);
+	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 0);
+
 	return 0;
 }

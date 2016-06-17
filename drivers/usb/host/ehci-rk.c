@@ -21,8 +21,12 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 	if (init == USB_INIT_DEVICE)
 		return -ENODEV;
 	
-	*hccr = (struct ehci_hccr *)(rkusb_active_hcd->regbase);
-	*hcor = (struct ehci_hcor *)(rkusb_active_hcd->regbase + 0x10);
+//	*hccr = (struct ehci_hccr *)(rkusb_active_hcd->regbase);
+//	*hcor = (struct ehci_hcor *)(rkusb_active_hcd->regbase + 0x10);
+	*hccr = (struct ehci_hccr *)(RKIO_USBHOST_PHYS);
+	*hcor = (struct ehci_hcor *)(RKIO_USBHOST_PHYS + 0x10);
+
+	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 1);
 
 	printf("ehci_hcd_init index %d,complete\n", index);
 	return 0;
