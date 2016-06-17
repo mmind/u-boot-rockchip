@@ -1012,7 +1012,14 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
 	uint32_t snpsid;
 	int i, j;
 
-	gpio_direction_output(GPIO_BANK0 | GPIO_D1, 1);
+	/* inno phy reset */
+	grf_writel(0x00030001, GRF_UOC0_CON0);
+	mdelay(10);
+	grf_writel(0x00030002, GRF_UOC0_CON0);
+
+	/* usb uart disable */
+	rkplat_uart2UsbEn(0);
+
 	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 1);
 
 	root_hub_devnum = 0;
@@ -1056,7 +1063,6 @@ int usb_lowlevel_stop(int index)
 			DWC2_HPRT0_PRTOVRCURRCHNG,
 			DWC2_HPRT0_PRTRST);
 
-	gpio_direction_output(GPIO_BANK0 | GPIO_D1, 0);
 	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 0);
 
 	return 0;

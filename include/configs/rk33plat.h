@@ -12,7 +12,6 @@
 
 #include <asm/arch/io.h>
 
-
 /* rk gic400 is GICV2 */
 #define CONFIG_GICV2
 #define GICD_BASE			RKIO_GICD_PHYS
@@ -123,7 +122,7 @@
 
 
 /* mod it to enable console commands.	*/
-#define CONFIG_BOOTDELAY		0
+#define CONFIG_BOOTDELAY		2
 
 /* efuse version */
 #ifdef CONFIG_RK_EFUSE
@@ -218,6 +217,33 @@
 #define CONFIG_PARTITIONS
 #endif /* CONFIG_RK_UMS_BOOT_EN */
 
+
+#define CONFIG_SYS_DCACHE_OFF
+
+/*#define CONFIG_USB_EHCI
+#define CONFIG_USB_EHCI_RK*/
+
+/* #define CONFIG_USB_DWC2
+#define CONFIG_USB_DWC2_REG_ADDR RKIO_USBOTG_PHYS */
+
+#define CONFIG_USB_DWC_HCD
+
+#define CONFIG_CMD_USB
+
+#define CONFIG_USB_HOST_ETHER	/* Enable USB Ethernet adapters */
+#define CONFIG_USB_ETHER_ASIX
+
+#define CONFIG_BOOTP_SUBNETMASK
+#define CONFIG_BOOTP_GATEWAY
+#define CONFIG_BOOTP_HOSTNAME
+#define CONFIG_BOOTP_BOOTPATH
+#define CONFIG_CMD_NET
+#define CONFIG_CMD_DHCP
+#define CONFIG_BOOTP_SUBNETMASK
+#define CONFIG_BOOTP_GATEWAY
+
+#define CONFIG_SERVERIP		192.168.140.1
+#define CONFIG_BOOTFILE		"hstuebner/r88.vmlinuz"
 
 /* more config for display */
 #ifdef CONFIG_LCD

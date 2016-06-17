@@ -194,9 +194,9 @@ ifdef CONFIG_LZMA
 obj-$(CONFIG_CMD_LZMADEC) += cmd_lzmadec.o
 endif
 ifdef CONFIG_CMD_USB
-ifndef CONFIG_ROCKCHIP
+#ifndef CONFIG_ROCKCHIP
 obj-y += cmd_usb.o
-endif
+#endif
 obj-y += usb.o usb_hub.o
 obj-$(CONFIG_USB_STORAGE) += usb_storage.o
 endif

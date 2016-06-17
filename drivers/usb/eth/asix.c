@@ -447,6 +447,12 @@ static int asix_init(struct eth_device *eth, bd_t *bd)
 		goto out_err;
 	}
 
+	/*
+	 * Wait some more to avoid timeout on first transfer
+	 * (e.g. EHCI timed out on TD - token=0x8008d80)
+	 */
+	mdelay(25);
+
 	return 0;
 out_err:
 	return -1;

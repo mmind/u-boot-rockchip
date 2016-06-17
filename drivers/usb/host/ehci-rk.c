@@ -26,7 +26,13 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 	*hccr = (struct ehci_hccr *)(RKIO_USBHOST_PHYS);
 	*hcor = (struct ehci_hcor *)(RKIO_USBHOST_PHYS + 0x10);
 
+	grf_writel(0x00030001, GRF_UOC1_CON5);
+	mdelay(10);
+	grf_writel(0x00030002, GRF_UOC1_CON5);
+	mdelay(10);
+
 	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 1);
+	mdelay(10);
 
 	printf("ehci_hcd_init index %d,complete\n", index);
 	return 0;
