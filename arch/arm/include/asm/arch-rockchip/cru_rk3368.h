@@ -1,0 +1,244 @@
+/*
+ * (C) Copyright 2016 Heiko Stuebner <heiko@sntech.de>
+ *
+ * (C) Copyright 2008-2014 Rockchip Electronics
+ * Peter, Software Engineering, <superpeter.cai@gmail.com>.
+ *
+ * SPDX-License-Identifier:     GPL-2.0+
+ */
+#ifndef _ASM_ARCH_CRU_RK3368_H
+#define _ASM_ARCH_CRU_RK3368_H
+
+#define OSC_HZ		(24 * 1000 * 1000)
+
+#define APLLB_HZ	(816 * 1000000)
+#define APLLL_HZ	(600 * 1000000)
+#define GPLL_HZ		(594 * 1000000)
+#define CPLL_HZ		(384 * 1000000)
+#define NPLL_HZ		(384 * 1000000)
+
+/* The SRAM is clocked off aclk_bus, so we want to max it out for boot speed */
+//#define PD_BUS_ACLK_HZ	297000000
+//#define PD_BUS_HCLK_HZ	148500000
+//#define PD_BUS_PCLK_HZ	74250000
+
+//#define PERI_ACLK_HZ	148500000
+//#define PERI_HCLK_HZ	148500000
+//#define PERI_PCLK_HZ	74250000
+
+struct rk3368_cru {
+	struct rk3368_pll {
+		u32 con0;
+		u32 con1;
+		u32 con2;
+		u32 con3;
+	} pll[6];
+	u32 reserved0[40];
+	u32 cru_clksel_con[56];
+	u32 reserved1[8];
+	u32 cru_clkgate_con[25];
+	u32 reserved2[7];
+	u32 cru_glb_srst_fst_value;
+	u32 cru_glb_srst_snd_value;
+	u32 reserved3[30];
+	u32 cru_softrst_con[15];
+	u32 reserved4[17];
+	u32 cru_misc_con;
+	u32 cru_glb_cnt_th;
+	u32 cru_glb_rst_con;
+	u32 cru_glb_rst_st;
+	u32 reserved5[28];
+	u32 cru_sdmmc_con[2];
+	u32 cru_sdio0_con[2];
+	u32 cru_sdio1_con[2];
+	u32 cru_emmc_con[2];
+};
+check_member(rk3368_cru, cru_emmc_con[1], 0x041c);
+
+/* CRU_CLKSEL48_CON */
+enum {
+	SDIO0_PLL_SHIFT		= 8,
+	SDIO0_PLL_MASK		= 3,
+	SDIO0_PLL_SELECT_CODEC	= 0,
+	SDIO0_PLL_SELECT_GENERAL,
+	SDIO0_PLL_SELECT_USBPHY,
+	SDIO0_PLL_SELECT_24MHZ,
+
+	SDIO0_DIV_SHIFT		= 0,
+	SDIO0_DIV_MASK		= 0x7f,
+};
+
+/* CRU_CLKSEL50_CON */
+enum {
+
+	MMC0_PLL_SHIFT		= 8,
+	MMC0_PLL_MASK		= 3,
+	MMC0_PLL_SELECT_CODEC	= 0,
+	MMC0_PLL_SELECT_GENERAL,
+	MMC0_PLL_SELECT_USBPHY,
+	MMC0_PLL_SELECT_24MHZ,
+
+	MMC0_DIV_SHIFT		= 0,
+	MMC0_DIV_MASK		= 0x7f,
+};
+
+/* CRU_CLKSEL51_CON */
+enum {
+	EMMC_PLL_SHIFT		= 8,
+	EMMC_PLL_MASK		= 3,
+	EMMC_PLL_SELECT_CODEC	= 0,
+	EMMC_PLL_SELECT_GENERAL,
+	EMMC_PLL_SELECT_USBPHY,
+	EMMC_PLL_SELECT_24MHZ,
+
+	EMMC_DIV_SHIFT		= 0,
+	EMMC_DIV_MASK		= 0x7f,
+};
+
+
+/* CRU_CLKSEL43_CON */
+enum {
+	WIFI_PLL_SHIFT = 12,
+	WIFI_PLL_MASK = 1,
+	WIFI_PLL_SELECT_CODEC = 0,
+	WIFI_PLL_SELECT_GENERAL = 1,
+
+	RMII_EXTCLK_SHIFT = 8,
+	RMII_EXTCLK_MASK = 1,
+	RMII_EXTCLK_SELECT_INT_DIV_CLK = 0,
+	RMII_EXTCLK_SELECT_EXT_CLK = 1,
+
+	MAC_PLL_SHIFT = 6,
+	MAC_PLL_MASK = 0x3,
+	MAC_PLL_SELECT_NEW = 0x0,
+	MAC_PLL_SELECT_CODEC = 0x1,
+	MAC_PLL_SELECT_GENERAL = 0x2,
+
+	MAC_DIV_CON_SHIFT = 0,
+	MAC_DIV_CON_MASK = 0x1f,
+};
+
+/* CRU_CLKSEL25_CON */
+//enum {
+/*	SPI1_PLL_SHIFT		= 0xf,
+	SPI1_PLL_MASK		= 1,
+	SPI1_PLL_SELECT_CODEC	= 0,
+	SPI1_PLL_SELECT_GENERAL,
+
+	SPI1_DIV_SHIFT		= 8,
+	SPI1_DIV_MASK		= 0x7f,
+
+	SPI0_PLL_SHIFT		= 7,
+	SPI0_PLL_MASK		= 1,
+	SPI0_PLL_SELECT_CODEC	= 0,
+	SPI0_PLL_SELECT_GENERAL,
+
+	SPI0_DIV_SHIFT		= 0,
+	SPI0_DIV_MASK		= 0x7f,*/
+//};
+
+/* CRU_CLKSEL37_CON */
+//enum {
+/*	PCLK_CORE_DBG_DIV_SHIFT	= 9,
+	PCLK_CORE_DBG_DIV_MASK	= 0x1f,
+
+	ATCLK_CORE_DIV_CON_SHIFT = 4,
+	ATCLK_CORE_DIV_CON_MASK	= 0x1f,
+
+	CLK_L2RAM_DIV_SHIFT	= 0,
+	CLK_L2RAM_DIV_MASK	= 7, */
+//};
+
+/* CRU_MODE_CON */
+/*enum {
+	NPLL_MODE_SHIFT		= 0xe,
+	NPLL_MODE_MASK		= 3,
+	NPLL_MODE_SLOW		= 0,
+	NPLL_MODE_NORMAL,
+	NPLL_MODE_DEEP,
+
+	GPLL_MODE_SHIFT		= 0xc,
+	GPLL_MODE_MASK		= 3,
+	GPLL_MODE_SLOW		= 0,
+	GPLL_MODE_NORMAL,
+	GPLL_MODE_DEEP,
+
+	CPLL_MODE_SHIFT		= 8,
+	CPLL_MODE_MASK		= 3,
+	CPLL_MODE_SLOW		= 0,
+	CPLL_MODE_NORMAL,
+	CPLL_MODE_DEEP,
+
+	DPLL_MODE_SHIFT		= 4,
+	DPLL_MODE_MASK		= 3,
+	DPLL_MODE_SLOW		= 0,
+	DPLL_MODE_NORMAL,
+	DPLL_MODE_DEEP,
+
+	APLL_MODE_SHIFT		= 0,
+	APLL_MODE_MASK		= 3,
+	APLL_MODE_SLOW		= 0,
+	APLL_MODE_NORMAL,
+	APLL_MODE_DEEP,
+};*/
+
+/* CRU_APLL_CON0 */
+enum {
+	CLKR_SHIFT		= 8,
+	CLKR_MASK		= 0x3f,
+
+	CLKOD_SHIFT		= 0,
+	CLKOD_MASK		= 0xf,
+};
+
+/* CRU_APLL_CON1 */
+enum {
+	LOCK_SHIFT		= 0x1f,
+	LOCK_MASK		= 1,
+	LOCK_UNLOCK		= 0,
+	LOCK_LOCK,
+
+	CLKF_SHIFT		= 0,
+	CLKF_MASK		= 0x1fff,
+};
+
+/* CRU_APLL_CON3 */
+enum {
+	PLLMODE_SHIFT		= 8,
+	PLLMODE_MASK		= 3,
+	PLLMODE_SLOW		= 0,
+	PLLMODE_NORMAL,
+	PLLMODE_DEEP,
+
+	RESET_SHIFT		= 5,
+	RESET_MASK		= 1,
+	RESET_NORMAL		= 0,
+	RESET_RESET,
+
+	TEST_SHIFT		= 4,
+	TEST_MASK		= 1,
+	TEST_NORMAL		= 0,
+	TEST_TEST,
+
+	ENSAT_SHIFT		= 3,
+	ENSAT_MASK		= 1,
+	ENSAT_DISABLE		= 0,
+	ENSAT_ENABLE,
+
+	FASTEN_SHIFT		= 2,
+	FASTEN_MASK		= 1,
+	FASTEN_DISABLE		= 0,
+	FASTEN_ENABLE,
+
+	POWER_DOWN_SHIFT	= 1,
+	POWER_DOWN_MASK		= 1,
+	POWER_DOWN_DISABLE	= 0,
+	POWER_DOWN_ENABLE,
+
+	BYPASS_SHIFT		= 0,
+	BYPASS_MASK		= 1,
+	BYPASS_DISABLE		= 0,
+	BYPASS_ENABLE,
+};
+
+#endif
