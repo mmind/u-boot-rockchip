@@ -16,12 +16,18 @@ enum {
 	ROCKCHIP_SYSCON_GRF,
 	ROCKCHIP_SYSCON_SGRF,
 	ROCKCHIP_SYSCON_PMU,
+	ROCKCHIP_SYSCON_PMUGRF,
 };
 
 /* Standard Rockchip clock numbers */
 enum rk_clk_id {
 	CLK_OSC,
+#ifdef CONFIG_ROCKCHIP_RK3368
+	CLK_ARMB,
+	CLK_ARML,
+#else
 	CLK_ARM,
+#endif
 	CLK_DDR,
 	CLK_CODEC,
 	CLK_GENERAL,
