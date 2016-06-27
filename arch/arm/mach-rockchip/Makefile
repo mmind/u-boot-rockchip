@@ -13,3 +13,4 @@ endif
 obj-y += rk_timer.o
 obj-$(CONFIG_ROCKCHIP_RK3288) += rk3288/
 obj-$(CONFIG_ROCKCHIP_RK3036) += rk3036/
+obj-$(CONFIG_ROCKCHIP_RK3368) += rk3368/

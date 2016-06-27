@@ -1,0 +1,19 @@
+if ROCKCHIP_RK3368
+
+config TARGET_R88_RK3368
+	bool "R88-RK3368"
+	help
+	  Firefly is a RK3288-based development board with 2 USB ports,
+	  HDMI, VGA, micro-SD card, audio, WiFi  and Gigabit Ethernet, It
+	  also includes on-board eMMC and 1GB of SDRAM. Expansion connectors
+	  provide access to display pins, I2C, SPI, UART and GPIOs.
+
+config SYS_SOC
+	default "rockchip"
+
+config SYS_MALLOC_F_LEN
+	default 0x0800
+
+source "board/rockchip/r88-rk3368/Kconfig"
+
+endif

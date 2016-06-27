@@ -60,7 +60,12 @@ static int do_clock(cmd_tbl_t *cmdtp, int flag, int argc,
 		int id;
 	} clks[] = {
 		{ "osc", CLK_OSC },
+#ifdef CONFIG_ROCKCHIP_RK3368
+		{ "apllb", CLK_ARMB },
+		{ "aplll", CLK_ARML },
+#else
 		{ "apll", CLK_ARM },
+#endif
 		{ "dpll", CLK_DDR },
 		{ "cpll", CLK_CODEC },
 		{ "gpll", CLK_GENERAL },
