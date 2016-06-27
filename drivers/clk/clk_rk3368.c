@@ -198,7 +198,7 @@ static int rockchip_mac_set_clk(struct rk3368_cru *cru,
 
 void rkclk_set_pll_mode(struct rk3368_cru *cru, enum rk_clk_id clk_id, int mode)
 {
-	int pll_id = rk_pll_id(CLK_ARML);
+	int pll_id = rk_pll_id(clk_id);
 	struct rk3368_pll *pll = &cru->pll[pll_id];
 
 	rk_clrsetreg(&pll->con3,
