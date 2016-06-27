@@ -27,7 +27,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3288-firefly.dtb \
 	rk3288-jerry.dtb \
 	rk3288-rock2-square.dtb \
-	rk3036-sdk.dtb
+	rk3036-sdk.dtb \
+	rk3368-r88.dtb
 dtb-$(CONFIG_ARCH_MESON) += \
 	meson-gxbb-odroidc2.dtb
 dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
