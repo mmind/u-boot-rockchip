@@ -218,20 +218,37 @@
 #endif /* CONFIG_RK_UMS_BOOT_EN */
 
 
+#define CONFIG_SYS_ICACHE_OFF
 #define CONFIG_SYS_DCACHE_OFF
+#define CONFIG_SYS_L2CACHE_OFF
 
-/*#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_RK*/
+/* variant1: use ehci host port */
+#define CONFIG_USB_EHCI
+#define CONFIG_USB_EHCI_RK
 
+/* vairant2: use uboots dwc2 driver for otg port */
 /* #define CONFIG_USB_DWC2
 #define CONFIG_USB_DWC2_REG_ADDR RKIO_USBOTG_PHYS */
 
-#define CONFIG_USB_DWC_HCD
+/* variant3 use rk's dwc2 driver for otg port */
+/*#define CONFIG_USB_DWC_HCD */
 
 #define CONFIG_CMD_USB
+#define CONFIG_USB_STORAGE
+#define CONFIG_PARTITIONS
+#define CONFIG_DOS_PARTITION
+#define CONFIG_EFI_PARTITION
+#define CONFIG_PARTITION_UUIDS
+
+#define CONFIG_CMD_PART
+#define CONFIG_CMD_ELF
+#define CONFIG_CMD_FAT
+#define CONFIG_CMD_EXT2
+#define CONFIG_CMD_EXT4
 
 #define CONFIG_USB_HOST_ETHER	/* Enable USB Ethernet adapters */
 #define CONFIG_USB_ETHER_ASIX
+#define CONFIG_USB_ETHER_SMSC95XX
 
 #define CONFIG_BOOTP_SUBNETMASK
 #define CONFIG_BOOTP_GATEWAY

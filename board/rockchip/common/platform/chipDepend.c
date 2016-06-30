@@ -174,6 +174,9 @@ void FW_NandDeInit(void)
 #if defined(CONFIG_RKCHIP_RK3368)
 static void rk3368_uart2usb(uint32 en)
 {
+grf_writel(0x34000000, GRF_UOC1_CON4); // usb uart disable
+return;
+
 	if (en) {
 		grf_writel(0x34000000, GRF_UOC1_CON4); // usbphy bypass disable and otg enable.
 

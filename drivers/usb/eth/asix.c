@@ -4,6 +4,7 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
+#define DEBUG
 #include <common.h>
 #include <usb.h>
 #include <linux/mii.h>
@@ -464,6 +465,7 @@ static int asix_send(struct eth_device *eth, void *packet, int length)
 	int err;
 	u32 packet_len;
 	int actual_len;
+	int i;
 	ALLOC_CACHE_ALIGN_BUFFER(unsigned char, msg,
 		PKTSIZE + sizeof(packet_len));
 
@@ -475,6 +477,9 @@ static int asix_send(struct eth_device *eth, void *packet, int length)
 	memcpy(msg, &packet_len, sizeof(packet_len));
 	memcpy(msg + sizeof(packet_len), (void *)packet, length);
 
+for (i = 0; i < length; i++)
+debug ("0x%x ", ((unsigned char*)packet)[i]);
+debug("\n");
 	err = usb_bulk_msg(dev->pusb_dev,
 				usb_sndbulkpipe(dev->pusb_dev, dev->ep_out),
 				(void *)msg,
@@ -495,6 +500,7 @@ static int asix_recv(struct eth_device *eth)
 	int err;
 	int actual_len;
 	u32 packet_len;
+	int i;
 
 	debug("** %s()\n", __func__);
 
@@ -539,6 +545,9 @@ static int asix_recv(struct eth_device *eth)
 			return -1;
 		}
 
+for (i = 0; i < actual_len; i++)
+debug ("0x%x ", recv_buf[i]);
+debug("\n");
 		/* Notify net stack */
 		NetReceive(buf_ptr + sizeof(packet_len), packet_len);
 

@@ -571,9 +571,11 @@ ehci_submit_async(struct usb_device *dev, unsigned long pipe, void *buffer,
 			ALIGN_END_ADDR(struct qTD, qtd, qtd_count));
 
 		token = hc32_to_cpu(vtd->qt_token);
+printf("ehci token status 0x%x\n", QT_TOKEN_GET_STATUS(token));
 		if (!(QT_TOKEN_GET_STATUS(token) & QT_TOKEN_STATUS_ACTIVE))
 			break;
 		WATCHDOG_RESET();
+mdelay(10);
 	} while (get_timer(ts) < timeout);
 
 	/*
@@ -855,11 +857,21 @@ ehci_submit_root(struct usb_device *dev, unsigned long pipe, void *buffer,
 				 */
 				ret = handshake(status_reg, EHCI_PS_PR, 0,
 						2 * 1000);
-				if (!ret)
-					ctrl->portreset |= 1 << port;
-				else
+				if (!ret) {
+					reg = ehci_readl(status_reg);
+					if ((reg & (EHCI_PS_PE | EHCI_PS_CS))
+					    == EHCI_PS_CS && !ehci_is_TDI()) {
+						debug("port %d full speed --> companion\n", port - 1);
+						reg &= ~EHCI_PS_CLEAR;
+						reg |= EHCI_PS_PO;
+						ehci_writel(status_reg, reg);
+					} else {
+						ctrl->portreset |= 1 << port;
+					}
+				} else {
 					printf("port(%d) reset error\n",
 					       port - 1);
+				}
 			}
 			break;
 		case USB_PORT_FEAT_TEST:

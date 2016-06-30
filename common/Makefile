@@ -20,11 +20,11 @@ obj-y += cli_simple.o
 
 obj-y += cli.o
 obj-y += cli_readline.o
-ifndef CONFIG_ROCKCHIP
+#ifndef CONFIG_ROCKCHIP
 obj-y += s_record.o
 obj-y += xyzModem.o
+#endif
 obj-y += cmd_disk.o
-endif
 
 # This option is not just y/n - it can have a numeric value
 ifdef CONFIG_BOOTDELAY
@@ -131,9 +131,9 @@ obj-$(CONFIG_CMD_CRAMFS) += cmd_cramfs.o
 obj-$(CONFIG_CMD_LDRINFO) += cmd_ldrinfo.o
 obj-$(CONFIG_CMD_LED) += cmd_led.o
 obj-$(CONFIG_CMD_LICENSE) += cmd_license.o
-ifndef CONFIG_ROCKCHIP
+#ifndef CONFIG_ROCKCHIP
 obj-y += cmd_load.o
-endif
+#endif
 obj-$(CONFIG_LOGBUFFER) += cmd_log.o
 obj-$(CONFIG_ID_EEPROM) += cmd_mac.o
 obj-$(CONFIG_CMD_MD5SUM) += cmd_md5sum.o

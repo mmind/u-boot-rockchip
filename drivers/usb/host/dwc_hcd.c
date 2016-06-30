@@ -469,7 +469,7 @@ dwc2_transfer(struct usb_device *dev, unsigned long pipe, int size,
 		memcpy(aligned_buf, data_buf, size);
 
 	if (dir == EPDIR_OUT)
-		flush_dcache_range(aligned_buf, aligned_buf +
+		flush_dcache_range((unsigned long)aligned_buf, (unsigned long)aligned_buf +
 				   roundup(size, ARCH_DMA_MINALIGN));
 
 	writel(hctsiz.d32, &reg->Host.hchn[ch_num].hctsizn);
@@ -483,7 +483,7 @@ dwc2_transfer(struct usb_device *dev, unsigned long pipe, int size,
 		transferred = (dir == EPDIR_IN) ? inpkt_length - ret : ret;
 
 		if (dir == EPDIR_IN)
-			invalidate_dcache_range(aligned_buf, aligned_buf +
+			invalidate_dcache_range((unsigned long)aligned_buf, (unsigned long)aligned_buf +
 				roundup(transferred, ARCH_DMA_MINALIGN));
 
 		if (do_copy && (dir == EPDIR_IN))
@@ -610,19 +610,21 @@ static void dwc2_reinit(pUSB_OTG_REG regbase)
 	printf("DWC2@0x%p init finished!\n", regbase);
 }
 
+extern void rkplat_uart2UsbEn(uint32 en);
+
 int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
 {
 //	pUSB_OTG_REG reg = (pUSB_OTG_REG)rkusb_active_hcd->regbase;
 	pUSB_OTG_REG reg = (pUSB_OTG_REG)RKIO_USBOTG_PHYS;
 	struct dwc_ctrl *dwcctl;
 
+	/* usb uart disable */
+	rkplat_uart2UsbEn(0);
+
 	/* inno phy reset */
 	grf_writel(0x00030001, GRF_UOC0_CON0);
 	mdelay(10);
 	grf_writel(0x00030002, GRF_UOC0_CON0);
-
-	/* usb uart disable */
-	rkplat_uart2UsbEn(0);
 
 	gpio_direction_output(GPIO_BANK0 | GPIO_A4, 1);
 
