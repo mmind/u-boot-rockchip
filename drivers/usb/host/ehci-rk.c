@@ -24,10 +24,7 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 //	*hccr = (struct ehci_hccr *)(rkusb_active_hcd->regbase);
 //	*hcor = (struct ehci_hcor *)(rkusb_active_hcd->regbase + 0x10);
 	*hccr = (struct ehci_hccr *)(RKIO_USBHOST_PHYS);
-//	*hcor = (struct ehci_hcor *)(RKIO_USBHOST_PHYS + 0x10);
-
-	*hcor = (struct ehci_hcor *)((uint32_t) *hccr
-				+ HC_LENGTH(ehci_readl(&(*hccr)->cr_capbase)));
+	*hcor = (struct ehci_hcor *)(RKIO_USBHOST_PHYS + 0x10);
 
 /*	grf_writel(0x00030001, GRF_UOC1_CON5);
 	mdelay(10);
@@ -38,9 +35,6 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 	mdelay(10);
 
 	printf("ehci_hcd_init index %d,complete\n", index);
-	debug("ehci-rk: init hccr %x and hcor %x hc_length %d\n",
-	      (uint32_t)*hccr, (uint32_t)*hcor,
-	      (uint32_t)HC_LENGTH(ehci_readl(&(*hccr)->cr_capbase)));
 	return 0;
 }
 

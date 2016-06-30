@@ -256,10 +256,12 @@
 #define CONFIG_BOOTP_BOOTPATH
 #define CONFIG_CMD_NET
 #define CONFIG_CMD_DHCP
+#define CONFIG_CMD_PING
 #define CONFIG_BOOTP_SUBNETMASK
 #define CONFIG_BOOTP_GATEWAY
 
-#define CONFIG_SERVERIP		192.168.140.1
+/*#define CONFIG_SERVERIP		192.168.140.1 */
+#define CONFIG_SERVERIP		192.168.138.241
 #define CONFIG_BOOTFILE		"hstuebner/r88.vmlinuz"
 
 /* more config for display */
