@@ -571,11 +571,9 @@ ehci_submit_async(struct usb_device *dev, unsigned long pipe, void *buffer,
 			ALIGN_END_ADDR(struct qTD, qtd, qtd_count));
 
 		token = hc32_to_cpu(vtd->qt_token);
-printf("ehci token status 0x%x\n", QT_TOKEN_GET_STATUS(token));
 		if (!(QT_TOKEN_GET_STATUS(token) & QT_TOKEN_STATUS_ACTIVE))
 			break;
 		WATCHDOG_RESET();
-mdelay(10);
 	} while (get_timer(ts) < timeout);
 
 	/*

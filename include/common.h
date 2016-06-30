@@ -903,7 +903,7 @@ int zzip(void *dst, unsigned long *lenp, unsigned char *src,
 
 /* lib/net_utils.c */
 #include <net.h>
-static inline IPaddr_t getenv_IPaddr(char *var)
+static inline struct in_addr getenv_ip(char *var)
 {
 	return string_to_ip(getenv(var));
 }
@@ -935,22 +935,7 @@ int cpu_disable(int nr);
 int cpu_release(int nr, int argc, char * const argv[]);
 #endif
 
-/* Define a null map_sysmem() if the architecture doesn't use it */
-# ifndef CONFIG_ARCH_MAP_SYSMEM
-static inline void *map_sysmem(phys_addr_t paddr, unsigned long len)
-{
-	return (void *)(uintptr_t)paddr;
-}
-
-static inline void unmap_sysmem(const void *vaddr)
-{
-}
-
-static inline phys_addr_t map_to_sysmem(const void *ptr)
-{
-	return (phys_addr_t)(uintptr_t)ptr;
-}
-# endif
+#include <mapmem.h>
 
 #endif /* __ASSEMBLY__ */
 
