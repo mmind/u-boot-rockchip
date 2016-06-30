@@ -576,7 +576,7 @@ restart:
 		 *	if we have one.
 		 */
 		if (time_handler &&
-		    ((get_timer(0) - time_start) > time_delta)) {
+		    (get_timer(time_start) > time_delta)) {
 			thand_f *x;
 
 #if defined(CONFIG_MII) || defined(CONFIG_CMD_MII)

@@ -106,7 +106,7 @@ void arp_timeout_check(void)
 	t = get_timer(0);
 
 	/* check for arp timeout */
-	if ((t - arp_wait_timer_start) > ARP_TIMEOUT) {
+	if (get_timer(arp_wait_timer_start) > ARP_TIMEOUT) {
 		arp_wait_try++;
 
 		if (arp_wait_try >= ARP_TIMEOUT_COUNT) {
