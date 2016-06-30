@@ -1377,7 +1377,7 @@ destroy_int_queue(struct usb_device *dev, struct int_queue *queue)
 	ctrl->periodic_schedules--;
 
 	struct QH *cur = &ctrl->periodic_queue;
-	timeout = get_timer(0) + 500; /* abort after 500ms */
+	timeout = get_timer(0); /* abort after 500ms */
 	while (!(cur->qh_link & cpu_to_hc32(QH_LINK_TERMINATE))) {
 		debug("considering %p, with qh_link %x\n", cur, cur->qh_link);
 		if (NEXT_QH(cur) == queue->first) {
@@ -1389,7 +1389,7 @@ destroy_int_queue(struct usb_device *dev, struct int_queue *queue)
 			break;
 		}
 		cur = NEXT_QH(cur);
-		if (get_timer(0) > timeout) {
+		if (get_timer(timeout) > 500) {
 			printf("Timeout destroying interrupt endpoint queue\n");
 			result = -1;
 			goto out;
@@ -1426,9 +1426,9 @@ submit_int_msg(struct usb_device *dev, unsigned long pipe, void *buffer,
 	if (!queue)
 		return -1;
 
-	timeout = get_timer(0) + USB_TIMEOUT_MS(pipe);
+	timeout = get_timer(0);
 	while ((backbuffer = poll_int_queue(dev, queue)) == NULL)
-		if (get_timer(0) > timeout) {
+		if (get_timer(timeout) > USB_TIMEOUT_MS(pipe)) {
 			printf("Timeout poll on interrupt endpoint\n");
 			result = -ETIMEDOUT;
 			break;
