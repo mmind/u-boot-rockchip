@@ -132,7 +132,7 @@ static const table_entry_t uimage_os[] = {
 };
 
 static const table_entry_t uimage_type[] = {
-#ifndef CONFIG_ROCKCHIP
+//#ifndef CONFIG_ROCKCHIP
 	{	IH_TYPE_AISIMAGE,   "aisimage",   "Davinci AIS image",},
 	{	IH_TYPE_FILESYSTEM, "filesystem", "Filesystem Image",	},
 	{	IH_TYPE_FIRMWARE,   "firmware",	  "Firmware",		},
@@ -153,9 +153,9 @@ static const table_entry_t uimage_type[] = {
 	{	IH_TYPE_UBLIMAGE,   "ublimage",   "Davinci UBL image",},
 	{	IH_TYPE_MXSIMAGE,   "mxsimage",   "Freescale MXS Boot Image",},
 	{	IH_TYPE_ATMELIMAGE, "atmelimage", "ATMEL ROM-Boot Image",},
-#else
+//#else
 	{	IH_TYPE_KERNEL,	    "kernel",	  "Kernel Image",	},
-#endif /* CONFIG_ROCKCHIP */
+//#endif /* CONFIG_ROCKCHIP */
 	{	-1,		    "",		  "",			},
 };
 

@@ -260,9 +260,10 @@
 #define CONFIG_BOOTP_SUBNETMASK
 #define CONFIG_BOOTP_GATEWAY
 
-/*#define CONFIG_SERVERIP		192.168.140.1 */
-#define CONFIG_SERVERIP		192.168.138.241
+#define CONFIG_SERVERIP		192.168.140.1
 #define CONFIG_BOOTFILE		"hstuebner/r88.vmlinuz"
+
+#define CONFIG_FIT
 
 /* more config for display */
 #ifdef CONFIG_LCD

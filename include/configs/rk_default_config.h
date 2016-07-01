@@ -135,10 +135,13 @@
  */
 #define CONFIG_PREBOOT
 #define CONFIG_CMD_BOOTRK
-#define CONFIG_BOOTCOMMAND		"bootrk"
+/*#define CONFIG_BOOTCOMMAND		"bootrk" */
+#define CONFIG_BOOTCOMMAND		"usb start; dhcp 0x1000000; bootm 0x1000000"
 
 #ifdef CONFIG_ARM64
-#define CONFIG_EXTRA_ENV_SETTINGS	"verify=n\0initrd_high=0xffffffffffffffff=n\0"
+#define CONFIG_EXTRA_ENV_SETTINGS			\
+    "verify=n\0initrd_high=0xffffffffffffffff=n\0"	\
+    "bootargs=earlycon=uart8250,mmio32,0xff690000 console=tty1 console=ttyS2,115200n8 init=/sbin/init ip=dhcp nfsroot=192.168.140.1:/home/devel/nfs/rootfs-r88 root=/dev/nfs rw noinitrd"
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS	"verify=n\0initrd_high=0xffffffff=n\0"
 #endif

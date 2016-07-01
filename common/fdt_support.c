@@ -290,7 +290,7 @@ int fdt_chosen(void *fdt)
 
 	str = getenv("bootargs");
 	if (str) {
-#ifndef CONFIG_ROCKCHIP
+//#ifndef CONFIG_ROCKCHIP
 		err = fdt_setprop(fdt, nodeoffset, "bootargs", str,
 				  strlen(str) + 1);
 		if (err < 0) {
@@ -298,7 +298,7 @@ int fdt_chosen(void *fdt)
 			       fdt_strerror(err));
 			return err;
 		}
-#else
+/*#else
 		const char *bootargs = NULL;
 		char buf[2048];
 
@@ -322,7 +322,7 @@ int fdt_chosen(void *fdt)
 				return err;
 			}
 		}
-#endif
+#endif*/
 	}
 
 	return fdt_fixup_stdout(fdt, nodeoffset);
