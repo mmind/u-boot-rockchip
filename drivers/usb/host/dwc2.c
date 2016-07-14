@@ -262,10 +262,10 @@ static void dwc_otg_core_host_init(struct udevice *dev,
 		clrsetbits_le32(&regs->hc_regs[i].hcchar,
 				DWC2_HCCHAR_EPDIR,
 				DWC2_HCCHAR_CHEN | DWC2_HCCHAR_CHDIS);
-		ret = wait_for_bit(__func__, &regs->hc_regs[i].hcchar,
+/*		ret = wait_for_bit(__func__, &regs->hc_regs[i].hcchar,
 				   DWC2_HCCHAR_CHEN, false, 1000, false);
 		if (ret)
-			printf("%s: Timeout!\n", __func__);
+			printf("%s: Timeout!\n", __func__);*/
 	}
 
 	/* Turn on the vbus power. */
