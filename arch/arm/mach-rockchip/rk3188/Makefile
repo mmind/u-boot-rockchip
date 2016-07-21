@@ -6,4 +6,5 @@
 
 obj-y += clk_rk3188.o
 obj-y += reset_rk3188.o
+#obj-y += sdram_rk3188.o
 obj-y += syscon_rk3188.o
