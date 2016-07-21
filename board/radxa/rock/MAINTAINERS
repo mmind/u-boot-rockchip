@@ -1,0 +1,6 @@
+RADXA_ROCK
+M:	Simon Glass <sjg@chromium.org>
+S:	Maintained
+F:	board/radxa/rock
+F:	include/configs/rock.h
+F:	configs/rock_defconfig
