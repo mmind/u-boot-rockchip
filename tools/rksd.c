@@ -25,6 +25,11 @@ static void rksd_print_header(const void *buf)
 {
 }
 
+static unsigned char rc4_key[16] = {
+	124, 78, 3, 4, 85, 5, 9, 7,
+	45, 44, 123, 56, 23, 13, 23, 17
+};
+
 static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
 			       struct image_tool_params *params)
 {
@@ -41,6 +46,9 @@ static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
 
 	memcpy(buf + RK_SPL_HDR_START, rkcommon_get_spl_hdr(params),
 	       RK_SPL_HDR_SIZE);
+
+printf("rc4 from 0x%x for 0x%x\n", RK_SPL_START - 4, params->file_size);
+	rc4_encode(buf + RK_SPL_START - 4, params->file_size, rc4_key);
 }
 
 static int rksd_extract_subimage(void *buf,  struct image_tool_params *params)

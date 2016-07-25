@@ -125,7 +125,7 @@ int rkcommon_set_header(void *buf, uint file_size,
 	memset(buf,  '\0', RK_INIT_OFFSET * RK_BLK_SIZE);
 	hdr = (struct header0_info *)buf;
 	hdr->signature = RK_SIGNATURE;
-	hdr->disable_rc4 = 1;
+	hdr->disable_rc4 = 0;
 	hdr->init_offset = RK_INIT_OFFSET;
 
 	hdr->init_size = (file_size + RK_BLK_SIZE - 1) / RK_BLK_SIZE;
