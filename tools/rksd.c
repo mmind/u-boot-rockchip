@@ -33,7 +33,7 @@ static unsigned char rc4_key[16] = {
 static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
 			       struct image_tool_params *params)
 {
-	unsigned int size;
+	unsigned int size, offset, remaining;
 	int ret;
 
 	size = params->file_size - RK_SPL_HDR_START;
@@ -47,8 +47,17 @@ static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
 	memcpy(buf + RK_SPL_HDR_START, rkcommon_get_spl_hdr(params),
 	       RK_SPL_HDR_SIZE);
 
-printf("rc4 from 0x%x for 0x%x\n", RK_SPL_START - 4, params->file_size);
-	rc4_encode(buf + RK_SPL_START - 4, params->file_size, rc4_key);
+	offset = RK_SPL_START - 4;
+	remaining = params->file_size - RK_SPL_START + 4;
+
+	while (remaining > 0) {
+		int step = (remaining > RK_BLK_SIZE) ? RK_BLK_SIZE : remaining;
+
+		printf("rc4 0x%x bytes from 0x%x for 0x%x\n", step, offset, step);
+		rc4_encode(buf + offset, step, rc4_key);
+		offset += RK_BLK_SIZE;
+		remaining -= step;
+	}
 }
 
 static int rksd_extract_subimage(void *buf,  struct image_tool_params *params)
