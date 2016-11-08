@@ -81,7 +81,8 @@
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
 	"usb start; " \
-	"dhcp ${loadaddr}; " \
-	"bootm; " \
+	"sleep 3; " \
+	"dhcp 0x64000000; " \
+	"bootm 0x64000000; " \
 
 #endif
