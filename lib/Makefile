@@ -55,6 +55,9 @@ obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec_common.o
 obj-$(CONFIG_$(SPL_)OF_CONTROL) += fdtdec.o
 endif
 
+ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_SPL_OF_PLATDATA),yy)
+obj-$(CONFIG_$(SPL_)OF_CONTROL) += of_plat.o
+endif
 ifdef CONFIG_SPL_BUILD
 obj-$(CONFIG_SPL_YMODEM_SUPPORT) += crc16.o
 obj-$(CONFIG_SPL_NET_SUPPORT) += net_utils.o

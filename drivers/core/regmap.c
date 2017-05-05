@@ -12,6 +12,7 @@
 #include <malloc.h>
 #include <mapmem.h>
 #include <regmap.h>
+#include <of_plat.h>
 
 #include <asm/io.h>
 
@@ -49,11 +50,19 @@ int regmap_init_mem_platdata(struct udevice *dev, u32 *reg, int count,
 	if (!map)
 		return -ENOMEM;
 
+#ifdef CONFIG_PHYS_64BIT
+	map->base = of_plat_get_number(reg, 2);
+	for (range = map->range; count > 0; reg += 4, range++, count--) {
+		range->start = of_plat_get_number(reg, 2);
+		range->size = of_plat_get_number(reg + 2, 2);
+	}
+#else
 	map->base = *reg;
 	for (range = map->range; count > 0; reg += 2, range++, count--) {
 		range->start = *reg;
 		range->size = reg[1];
 	}
+#endif
 
 	*mapp = map;
 
