@@ -125,6 +125,7 @@ static void phy_dll_bypass_set(struct rk3399_ddr_publ_regs *ddr_publ_regs,
 {
 	u32 *denali_phy = ddr_publ_regs->denali_phy;
 
+printf("%s: phy regs at 0x%x\n", __func__, denali_phy);
 	/* From IP spec, only freq small than 125 can enter dll bypass mode */
 	if (freq <= 125) {
 		/* phy_sw_master_mode_X PHY_86/214/342/470 4bits offset_8 */
@@ -997,6 +998,8 @@ static void dram_all_config(struct dram_info *dram,
 		sys_reg |= (info->cs1_row - 13) << SYS_REG_CS1_ROW_SHIFT(channel);
 		sys_reg |= (2 >> info->bw) << SYS_REG_BW_SHIFT(channel);
 		sys_reg |= (2 >> info->dbw) << SYS_REG_DBW_SHIFT(channel);
+printf("channel %d, cs0_row %lu, col %u, bk %u, bw %u, rank %u, 3_4 %u\n", channel, info->cs0_row, info->col, info->bk, info->bw, info->rank, info->row_3_4);
+printf("channel %d, chipsize_mb %lu\n", channel, (1 << (info->cs0_row + info->col + info->bk + info->bw - 20)));
 
 		ddr_msch_regs = dram->chan[channel].msch;
 		noc_timing = &sdram_params->ch[channel].noc_timings;
@@ -1237,6 +1240,7 @@ size_t sdram_size_mb(struct dram_info *dram)
 	u32 ch_num = 1 + ((sys_reg >> SYS_REG_NUM_CH_SHIFT)
 		       & SYS_REG_NUM_CH_MASK);
 
+printf("%s: ch_num %d\n", __func__, ch_num);
 	for (ch = 0; ch < ch_num; ch++) {
 		rank = 1 + (sys_reg >> SYS_REG_RANK_SHIFT(ch) &
 			SYS_REG_RANK_MASK);
@@ -1257,6 +1261,8 @@ size_t sdram_size_mb(struct dram_info *dram)
 			chipsize_mb += chipsize_mb >> (cs0_row - cs1_row);
 		if (row_3_4)
 			chipsize_mb = chipsize_mb * 3 / 4;
+printf("channel %d, cs0_row %lu, col %u, bk %u, bw %u, rank %u, 3_4 %u\n", ch, cs0_row, col, bk, bw, rank, row_3_4);
+printf("channel %d, chipsize_mb %lu\n", ch, chipsize_mb);
 		size_mb += chipsize_mb;
 	}
 
