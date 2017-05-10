@@ -70,6 +70,7 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	ENV_MEM_LAYOUT_SETTINGS \
 	"partitions=" PARTS_DEFAULT \
+	"ethaddr=CA:FF:EE:00:00:01\0" \
 	BOOTENV
 
 #endif
