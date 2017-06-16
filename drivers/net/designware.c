@@ -741,6 +741,8 @@ int designware_eth_ofdata_to_platdata(struct udevice *dev)
 	cell = fdt_getprop(gd->fdt_blob, dev_of_offset(dev), "max-speed", NULL);
 	if (cell)
 		pdata->max_speed = fdt32_to_cpu(*cell);
+/* set to 100 for now ... timeouts at 1000 */
+pdata->max_speed = 100;
 
 #ifdef CONFIG_DM_GPIO
 	if (fdtdec_get_bool(gd->fdt_blob, dev_of_offset(dev),

@@ -209,9 +209,11 @@
 	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 10000 50000>;
+/* somewhat working
 	tx_delay = <0x28>;
-	rx_delay = <0x1b>;
-	status = "okay";
+	rx_delay = <0x20>;
+*/
+//	status = "okay";
 };
 
 &i2c0 {
