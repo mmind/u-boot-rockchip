@@ -136,7 +136,7 @@
 #define CONFIG_PREBOOT
 #define CONFIG_CMD_BOOTRK
 /*#define CONFIG_BOOTCOMMAND		"bootrk" */
-#define CONFIG_BOOTCOMMAND		"usb start; dhcp 0x4000000; bootm 0x4000000"
+#define CONFIG_BOOTCOMMAND		"usb start; dhcp 0x20000000; bootm 0x20000000"
 
 #ifdef CONFIG_ARM64
 #define CONFIG_EXTRA_ENV_SETTINGS			\
