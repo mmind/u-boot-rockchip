@@ -21,6 +21,8 @@ config ROCKCHIP_RK3188
 	select TPL
 	select BOARD_LATE_INIT
 	select ROCKCHIP_BROM_HELPER
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RK3188 is a ARM-based SoC with a quad-core Cortex-A9
 	  including NEON and GPU, 512KB L2 cache, Mali-400 graphics, two
@@ -47,6 +49,8 @@ config ROCKCHIP_RK3288
 	select SPL_BOARD_INIT if SPL
 	select SUPPORT_SPL
 	select SPL
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RK3288 is a ARM-based SoC with a quad-core Cortex-A17
 	  including NEON and GPU, 1MB L2 cache, Mali-T7 graphics, two
@@ -57,6 +61,8 @@ config ROCKCHIP_RK3288
 config ROCKCHIP_RK3328
 	bool "Support Rockchip RK3328"
 	select ARM64
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RK3328 is a ARM-based SoC with a quad-core Cortex-A53.
 	  including NEON and GPU, 1MB L2 cache, Mali-T7 graphics, two
@@ -77,6 +83,8 @@ config ROCKCHIP_RK3368
 	select ENABLE_ARM_SOC_BOOT0_HOOK
 	select DEBUG_UART_BOARD_INIT
 	select SYS_NS16550
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RK3368 is a ARM-based SoC with a octa-core (organised
 	  into a big and little cluster with 4 cores each) Cortex-A53 including
@@ -114,6 +122,8 @@ config ROCKCHIP_RK3399
 	select SPL_DRIVERS_MISC_SUPPORT
 	select ENABLE_ARM_SOC_BOOT0_HOOK
 	select DEBUG_UART_BOARD_INIT
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RK3399 is a ARM-based SoC with a dual-core Cortex-A72
 	  and quad-core Cortex-A53.
@@ -125,6 +135,8 @@ config ROCKCHIP_RK3399
 config ROCKCHIP_RV1108
 	bool "Support Rockchip RV1108"
 	select CPU_V7
+	imply ADC
+	imply SARADC_ROCKCHIP
 	help
 	  The Rockchip RV1108 is a ARM-based SoC with a single-core Cortex-A7
 	  and a DSP.
