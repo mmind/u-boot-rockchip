@@ -1,0 +1,35 @@
+#!/bin/bash
+
+LOCALPATH=$(pwd)
+ROOTDIR=$(dirname $(dirname $(readlink -f $0)))
+OUT=${ROOTDIR}/out
+IMAGE=${ROOTDIR}/image
+BOARD=$1
+DEFCONFIG=""
+
+if [ $# != 1 ] ; then
+BOARD=rock
+fi
+OUTBIN=${BOARD}-uboot.bin
+
+
+# copy tpl and pad to 1020 byte
+cat tpl/u-boot-tpl.bin > tpl/u-boot-tplspl.bin
+truncate -s 1020 tpl/u-boot-tplspl.bin
+
+#append spl and encode the result using mkimage
+truncate -s %2048 spl/u-boot-spl.bin
+cat spl/u-boot-spl.bin >> tpl/u-boot-tplspl.bin
+tools/mkimage  -n rk3188 -T rksd -d tpl/u-boot-tplspl.bin ${OUTBIN}
+
+########
+# Need to remove the RK31 from the FlashBoot binary to create FlashSpl
+# This can be used instead of the open spl as first stage
+#tools/mkimage  -n rk3188 -T rksd -d FlashSpl ${OUTBIN}
+
+# bootrom reads and decodes 2kb blocks, so bring u-boot.bin in line
+truncate -s %2048 u-boot.bin
+
+# rk3188 needs an rc4-encoded uboot as well
+cat u-boot.bin | split -b 512 --filter='openssl rc4 -K 7C4E0304550509072D2C7B38170D1711' >> ${OUTBIN}
+echo U-boot image:${OUTBIN}
