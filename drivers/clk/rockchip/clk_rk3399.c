@@ -143,6 +143,14 @@ enum {
 	ACLK_PERIHP_DIV_CON_SHIFT	= 0,
 	ACLK_PERIHP_DIV_CON_MASK	= 0x1f,
 
+	/* CLKSEL_CON19 */
+	MAC_DIV_CON_SHIFT		= 8,
+	MAC_DIV_CON_MASK		= GENMASK(10, 8),
+	RMII_EXTCLK_SHIFT		= 4,
+	RMII_EXTCLK_MASK		= BIT(4),
+	RMII_EXTCLK_SELECT_INT_DIV_CLK	= 0,
+	RMII_EXTCLK_SELECT_EXT_CLK	= BIT(4),
+
 	/* CLKSEL_CON21 */
 	ACLK_EMMC_PLL_SEL_SHIFT         = 7,
 	ACLK_EMMC_PLL_SEL_MASK          = 0x1 << ACLK_EMMC_PLL_SEL_SHIFT,
@@ -781,6 +789,16 @@ static ulong rk3399_ddr_set_clk(struct rk3399_cru *cru,
 	return set_rate;
 }
 
+static int rockchip_mac_set_clk(struct rk3399_cru *cru,
+				int periph, uint freq)
+{
+	/* Assuming mac_clk is fed by an external clock */
+	rk_clrsetreg(&cru->clksel_con[19], RMII_EXTCLK_MASK,
+		     RMII_EXTCLK_SELECT_EXT_CLK);
+
+	return 0;
+}
+
 static ulong rk3399_saradc_get_clk(struct rk3399_cru *cru)
 {
 	u32 div, val;
@@ -865,8 +883,7 @@ static ulong rk3399_clk_set_rate(struct clk *clk, ulong rate)
 		ret = rk3399_mmc_set_clk(priv->cru, clk->id, rate);
 		break;
 	case SCLK_MAC:
-		/* nothing to do, as this is an external clock */
-		ret = rate;
+		ret = rockchip_mac_set_clk(priv->cru, clk->id, rate);
 		break;
 	case SCLK_I2C1:
 	case SCLK_I2C2:
