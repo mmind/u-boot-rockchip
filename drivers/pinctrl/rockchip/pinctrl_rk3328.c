@@ -72,6 +72,69 @@ enum {
 	GPIO1A0_SEL_MASK	= 0x3fff << GPIO1A0_SEL_SHIFT,
 	GPIO1A0_CARD_DATA_CLK_CMD_DETN	= 0x1555,
 
+	/* GPIO1B_IOMUX */
+	GPIO1B0_SEL_SHIFT	= 0,
+	GPIO1B0_SEL_MASK	= GENMASK(1, 0),
+	GPIO1B0_GMAC_TXD1M1	= 2,
+
+	GPIO1B1_SEL_SHIFT	= 2,
+	GPIO1B1_SEL_MASK	= GENMASK(3, 2),
+	GPIO1B1_GMAC_TXD0M1	= 2,
+
+	GPIO1B2_SEL_SHIFT	= 4,
+	GPIO1B2_SEL_MASK	= GENMASK(5, 4),
+	GPIO1B2_GMAC_RXD1M1	= 2,
+
+	GPIO1B3_SEL_SHIFT	= 6,
+	GPIO1B3_SEL_MASK	= GENMASK(7, 6),
+	GPIO1B3_GMAC_RXD0M1	= 2,
+
+	GPIO1B4_SEL_SHIFT	= 8,
+	GPIO1B4_SEL_MASK	= GENMASK(9, 8),
+	GPIO1B4_GMAC_TXCLKM1	= 2,
+
+	GPIO1B5_SEL_SHIFT	= 10,
+	GPIO1B5_SEL_MASK	= GENMASK(11, 10),
+	GPIO1B5_GMAC_RXCLKM1	= 2,
+
+	GPIO1B6_SEL_SHIFT	= 12,
+	GPIO1B6_SEL_MASK	= GENMASK(13, 12),
+	GPIO1B6_GMAC_RXD3M1	= 2,
+
+	GPIO1B7_SEL_SHIFT	= 14,
+	GPIO1B7_SEL_MASK	= GENMASK(15, 14),
+	GPIO1B7_GMAC_RXD2M1	= 2,
+
+	/* GPIO1C_IOMUX */
+	GPIO1C0_SEL_SHIFT	= 0,
+	GPIO1C0_SEL_MASK	= GENMASK(1, 0),
+	GPIO1C0_GMAC_TXD3M1	= 2,
+
+	GPIO1C1_SEL_SHIFT	= 2,
+	GPIO1C1_SEL_MASK	= GENMASK(3, 2),
+	GPIO1C1_GMAC_TXD2M1	= 2,
+
+	GPIO1C3_SEL_SHIFT	= 6,
+	GPIO1C3_SEL_MASK	= GENMASK(7, 6),
+	GPIO1C3_GMAC_MDIOM1	= 2,
+
+	GPIO1C5_SEL_SHIFT	= 10,
+	GPIO1C5_SEL_MASK	= GENMASK(11, 10),
+	GPIO1C5_GMAC_CLKM1	= 2,
+
+	GPIO1C6_SEL_SHIFT	= 12,
+	GPIO1C6_SEL_MASK	= GENMASK(13, 12),
+	GPIO1C6_GMAC_RXDVM1	= 2,
+
+	GPIO1C7_SEL_SHIFT	= 14,
+	GPIO1C7_SEL_MASK	= GENMASK(15, 14),
+	GPIO1C7_GMAC_MDCM1	= 2,
+
+	/* GPIO1D_IOMUX */
+	GPIO1D1_SEL_SHIFT	= 2,
+	GPIO1D1_SEL_MASK	= GENMASK(3, 2),
+	GPIO1D1_GMAC_TXENM1	= 2,
+
 	/* GPIO2A_IOMUX */
 	GPIO2A0_SEL_SHIFT	= 0,
 	GPIO2A0_SEL_MASK	= 3 << GPIO2A0_SEL_SHIFT,
@@ -149,6 +212,11 @@ enum {
 	IOMUX_SEL_UART2_M0	= 0,
 	IOMUX_SEL_UART2_M1,
 
+	IOMUX_SEL_GMAC_SHIFT	= 2,
+	IOMUX_SEL_GMAC_MASK	= BIT(2),
+	IOMUX_SEL_GMAC_M0	= 0,
+	IOMUX_SEL_GMAC_M1,
+
 	IOMUX_SEL_SPI_SHIFT	= 4,
 	IOMUX_SEL_SPI_MASK	= 3 << IOMUX_SEL_SPI_SHIFT,
 	IOMUX_SEL_SPI_M0	= 0,
@@ -159,6 +227,47 @@ enum {
 	IOMUX_SEL_SDMMC_MASK	= 1 << IOMUX_SEL_SDMMC_SHIFT,
 	IOMUX_SEL_SDMMC_M0	= 0,
 	IOMUX_SEL_SDMMC_M1,
+
+	IOMUX_SEL_GMACM1_OPTIMIZATION_SHIFT	= 10,
+	IOMUX_SEL_GMACM1_OPTIMIZATION_MASK	= BIT(10),
+	IOMUX_SEL_GMACM1_OPTIMIZATION_BEFORE	= 0,
+	IOMUX_SEL_GMACM1_OPTIMIZATION_AFTER,
+
+	/* GRF_GPIO1B_E */
+	GRF_GPIO1B0_E_SHIFT = 0,
+	GRF_GPIO1B0_E_MASK = GENMASK(1, 0),
+	GRF_GPIO1B1_E_SHIFT = 2,
+	GRF_GPIO1B1_E_MASK = GENMASK(3, 2),
+	GRF_GPIO1B2_E_SHIFT = 4,
+	GRF_GPIO1B2_E_MASK = GENMASK(5, 4),
+	GRF_GPIO1B3_E_SHIFT = 6,
+	GRF_GPIO1B3_E_MASK = GENMASK(7, 6),
+	GRF_GPIO1B4_E_SHIFT = 8,
+	GRF_GPIO1B4_E_MASK = GENMASK(9, 8),
+	GRF_GPIO1B5_E_SHIFT = 10,
+	GRF_GPIO1B5_E_MASK = GENMASK(11, 10),
+	GRF_GPIO1B6_E_SHIFT = 12,
+	GRF_GPIO1B6_E_MASK = GENMASK(13, 12),
+	GRF_GPIO1B7_E_SHIFT = 14,
+	GRF_GPIO1B7_E_MASK = GENMASK(15, 14),
+
+	/*  GRF_GPIO1C_E */
+	GRF_GPIO1C0_E_SHIFT = 0,
+	GRF_GPIO1C0_E_MASK = GENMASK(1, 0),
+	GRF_GPIO1C1_E_SHIFT = 2,
+	GRF_GPIO1C1_E_MASK = GENMASK(3, 2),
+	GRF_GPIO1C3_E_SHIFT = 6,
+	GRF_GPIO1C3_E_MASK = GENMASK(7, 6),
+	GRF_GPIO1C5_E_SHIFT = 10,
+	GRF_GPIO1C5_E_MASK = GENMASK(11, 10),
+	GRF_GPIO1C6_E_SHIFT = 12,
+	GRF_GPIO1C6_E_MASK = GENMASK(13, 12),
+	GRF_GPIO1C7_E_SHIFT = 14,
+	GRF_GPIO1C7_E_MASK = GENMASK(15, 14),
+
+	/*  GRF_GPIO1D_E */
+	GRF_GPIO1D1_E_SHIFT = 2,
+	GRF_GPIO1D1_E_MASK = GENMASK(3, 2),
 };
 
 struct rk3328_pinctrl_priv {
@@ -344,6 +453,124 @@ static void pinctrl_rk3328_sdmmc_config(struct rk3328_grf_regs *grf,
 	}
 }
 
+#if CONFIG_IS_ENABLED(GMAC_ROCKCHIP)
+static void pinctrl_rk3328_gmac_config(struct rk3328_grf_regs *grf, int gmac_id)
+{
+	switch (gmac_id) {
+	case PERIPH_ID_GMAC:
+		/* set rgmii m1 pins mux */
+		rk_clrsetreg(&grf->gpio1b_iomux,
+			     GPIO1B0_SEL_MASK |
+			     GPIO1B1_SEL_MASK |
+			     GPIO1B2_SEL_MASK |
+			     GPIO1B3_SEL_MASK |
+			     GPIO1B4_SEL_MASK |
+			     GPIO1B5_SEL_MASK |
+			     GPIO1B6_SEL_MASK |
+			     GPIO1B7_SEL_MASK,
+			     GPIO1B0_GMAC_TXD1M1 << GPIO1B0_SEL_SHIFT |
+			     GPIO1B1_GMAC_TXD0M1 << GPIO1B1_SEL_SHIFT |
+			     GPIO1B2_GMAC_RXD1M1 << GPIO1B2_SEL_SHIFT |
+			     GPIO1B3_GMAC_RXD0M1 << GPIO1B3_SEL_SHIFT |
+			     GPIO1B4_GMAC_TXCLKM1 << GPIO1B4_SEL_SHIFT |
+			     GPIO1B5_GMAC_RXCLKM1 << GPIO1B5_SEL_SHIFT |
+			     GPIO1B6_GMAC_RXD3M1 << GPIO1B6_SEL_SHIFT |
+			     GPIO1B7_GMAC_RXD2M1 << GPIO1B7_SEL_SHIFT);
+
+		rk_clrsetreg(&grf->gpio1c_iomux,
+			     GPIO1C0_SEL_MASK |
+			     GPIO1C1_SEL_MASK |
+			     GPIO1C3_SEL_MASK |
+			     GPIO1C5_SEL_MASK |
+			     GPIO1C6_SEL_MASK |
+			     GPIO1C7_SEL_MASK,
+			     GPIO1C0_GMAC_TXD3M1 << GPIO1C0_SEL_SHIFT |
+			     GPIO1C1_GMAC_TXD2M1 << GPIO1C1_SEL_SHIFT |
+			     GPIO1C3_GMAC_MDIOM1 << GPIO1C3_SEL_SHIFT |
+			     GPIO1C5_GMAC_CLKM1 << GPIO1C5_SEL_SHIFT |
+			     GPIO1C6_GMAC_RXDVM1 << GPIO1C6_SEL_SHIFT |
+			     GPIO1C7_GMAC_MDCM1 << GPIO1C7_SEL_SHIFT);
+
+		rk_clrsetreg(&grf->gpio1d_iomux,
+			     GPIO1D1_SEL_MASK,
+			     GPIO1D1_GMAC_TXENM1 << GPIO1D1_SEL_SHIFT);
+
+		/* set rgmii m0 tx pins mux */
+		rk_clrsetreg(&grf->gpio0b_iomux,
+			     GPIO0B0_SEL_MASK |
+			     GPIO0B4_SEL_MASK,
+			     GPIO0B0_GAMC_CLKTXM0 << GPIO0B0_SEL_SHIFT |
+			     GPIO0B4_GAMC_TXENM0 << GPIO0B4_SEL_SHIFT);
+
+		rk_clrsetreg(&grf->gpio0c_iomux,
+			     GPIO0C0_SEL_MASK |
+			     GPIO0C1_SEL_MASK |
+			     GPIO0C6_SEL_MASK |
+			     GPIO0C7_SEL_MASK,
+			     GPIO0C0_GAMC_TXD1M0 << GPIO0C0_SEL_SHIFT |
+			     GPIO0C1_GAMC_TXD0M0 << GPIO0C1_SEL_SHIFT |
+			     GPIO0C6_GAMC_TXD2M0 << GPIO0C6_SEL_SHIFT |
+			     GPIO0C7_GAMC_TXD3M0 << GPIO0C7_SEL_SHIFT);
+
+		rk_clrsetreg(&grf->gpio0d_iomux,
+			     GPIO0D0_SEL_MASK,
+			     GPIO0D0_GMAC_CLKM0 << GPIO0D0_SEL_SHIFT);
+
+		/* set com mux */
+		rk_clrsetreg(&grf->com_iomux,
+			     IOMUX_SEL_GMAC_MASK |
+			     IOMUX_SEL_GMACM1_OPTIMIZATION_MASK,
+			     IOMUX_SEL_GMAC_M1 << IOMUX_SEL_GMAC_SHIFT |
+			     IOMUX_SEL_GMACM1_OPTIMIZATION_AFTER <<
+			     IOMUX_SEL_GMACM1_OPTIMIZATION_SHIFT);
+
+		/*
+		 * set rgmii m1 tx pins to 12ma drive-strength,
+		 * and clean others to 2ma.
+		 */
+		rk_clrsetreg(&grf->gpio1b_e,
+			     GRF_GPIO1B0_E_MASK |
+			     GRF_GPIO1B1_E_MASK |
+			     GRF_GPIO1B2_E_MASK |
+			     GRF_GPIO1B3_E_MASK |
+			     GRF_GPIO1B4_E_MASK |
+			     GRF_GPIO1B5_E_MASK |
+			     GRF_GPIO1B6_E_MASK |
+			     GRF_GPIO1B7_E_MASK,
+			     0x3 << GRF_GPIO1B0_E_SHIFT |
+			     0x3 << GRF_GPIO1B1_E_SHIFT |
+			     0x0 << GRF_GPIO1B2_E_SHIFT |
+			     0x0 << GRF_GPIO1B3_E_SHIFT |
+			     0x3 << GRF_GPIO1B4_E_SHIFT |
+			     0x0 << GRF_GPIO1B5_E_SHIFT |
+			     0x0 << GRF_GPIO1B6_E_SHIFT |
+			     0x0 << GRF_GPIO1B7_E_SHIFT);
+
+		rk_clrsetreg(&grf->gpio1c_e,
+			     GRF_GPIO1C0_E_MASK |
+			     GRF_GPIO1C1_E_MASK |
+			     GRF_GPIO1C3_E_MASK |
+			     GRF_GPIO1C5_E_MASK |
+			     GRF_GPIO1C6_E_MASK |
+			     GRF_GPIO1C7_E_MASK,
+			     0x3 << GRF_GPIO1C0_E_SHIFT |
+			     0x3 << GRF_GPIO1C1_E_SHIFT |
+			     0x0 << GRF_GPIO1C3_E_SHIFT |
+			     0x0 << GRF_GPIO1C5_E_SHIFT |
+			     0x0 << GRF_GPIO1C6_E_SHIFT |
+			     0x0 << GRF_GPIO1C7_E_SHIFT);
+
+		rk_clrsetreg(&grf->gpio1d_e,
+			     GRF_GPIO1D1_E_MASK,
+			     0x3 << GRF_GPIO1D1_E_SHIFT);
+		break;
+	default:
+		debug("gmac id = %d iomux error!\n", gmac_id);
+		break;
+	}
+}
+#endif
+
 static int rk3328_pinctrl_request(struct udevice *dev, int func, int flags)
 {
 	struct rk3328_pinctrl_priv *priv = dev_get_priv(dev);
@@ -380,6 +607,11 @@ static int rk3328_pinctrl_request(struct udevice *dev, int func, int flags)
 	case PERIPH_ID_SDMMC1:
 		pinctrl_rk3328_sdmmc_config(priv->grf, func);
 		break;
+#if CONFIG_IS_ENABLED(GMAC_ROCKCHIP)
+	case PERIPH_ID_GMAC:
+		pinctrl_rk3328_gmac_config(priv->grf, func);
+		break;
+#endif
 	default:
 		return -EINVAL;
 	}
@@ -414,6 +646,10 @@ static int rk3328_pinctrl_get_periph_id(struct udevice *dev,
 		return PERIPH_ID_SDCARD;
 	case 14:
 		return PERIPH_ID_EMMC;
+#if CONFIG_IS_ENABLED(GMAC_ROCKCHIP)
+	case 24:
+		return PERIPH_ID_GMAC;
+#endif
 	}
 
 	return -ENOENT;
