@@ -59,15 +59,6 @@ int board_init(void)
 #define GRF_BASE	0x11000000
 	struct rk322x_grf * const grf = (void *)GRF_BASE;
 
-	rk_clrsetreg(&grf->gpio1b_iomux,
-		     GPIO1B1_MASK | GPIO1B2_MASK,
-		     GPIO1B2_UART21_SIN << GPIO1B2_SHIFT |
-		     GPIO1B1_UART21_SOUT << GPIO1B1_SHIFT);
-	/* Set channel C as UART2 input */
-	rk_clrsetreg(&grf->con_iomux,
-		     CON_IOMUX_UART2SEL_MASK,
-		     CON_IOMUX_UART2SEL_21 << CON_IOMUX_UART2SEL_SHIFT);
-
 	/*
 	* The integrated macphy is enabled by default, disable it
 	* for saving power consuming.
