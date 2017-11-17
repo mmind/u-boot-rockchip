@@ -4,6 +4,31 @@ config TARGET_EVB_RK3229
 	bool "EVB_RK3229"
 	select BOARD_LATE_INIT
 
+choice
+	prompt "UART2 channel used"
+
+	config ROCKCHIP_RK322X_UART2_CHAN0
+		bool "RK322x uart2 channel 0"
+		help
+		 The debug uart can take one of two routings to different
+		 soc pins for its RX signal which needs to be configured
+		 in a GRF setting depending on the layout of the board.
+
+		 This option will use channel 0 whose pins are shared with
+		 the sdmmc controller.
+
+	config ROCKCHIP_RK322X_UART2_CHAN1
+		bool "RK322x uart2 channel 1"
+		help
+		 The debug uart can take one of two routings to different
+		 soc pins for its RX signal which needs to be configured
+		 in a GRF setting depending on the layout of the board.
+
+		 This option will use channel 1 whose pins are shared with
+		 with the uart1 and spi2 controllers.
+
+endchoice
+
 config SYS_SOC
 	default "rockchip"
 

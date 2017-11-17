@@ -30,16 +30,30 @@ DECLARE_GLOBAL_DATA_PTR;
 
 void board_debug_uart_init(void)
 {
-static struct rk322x_grf * const grf = (void *)GRF_BASE;
+	static struct rk322x_grf * const grf = (void *)GRF_BASE;
+
+#if defined(CONFIG_ROCKCHIP_RK322X_UART2_CHAN0)
+	/* Enable early UART2 channel 0 on the RK322x */
+	rk_clrsetreg(&grf->gpio1c_iomux,
+		     GPIO1C2_MASK | GPIO1C3_MASK,
+		     GPIO1C3_UART2_SIN << GPIO1C3_SHIFT |
+		     GPIO1C2_UART2_SOUT << GPIO1C2_SHIFT);
+
+	/* Set channel 0 as UART2 input */
+	rk_clrsetreg(&grf->con_iomux,
+		     CON_IOMUX_UART2SEL_MASK,
+		     CON_IOMUX_UART2SEL_2 << CON_IOMUX_UART2SEL_SHIFT);
+#elif defined(CONFIG_ROCKCHIP_RK322X_UART2_CHAN1)
 	/* Enable early UART2 channel 1 on the RK322x */
 	rk_clrsetreg(&grf->gpio1b_iomux,
 		     GPIO1B1_MASK | GPIO1B2_MASK,
 		     GPIO1B2_UART21_SIN << GPIO1B2_SHIFT |
 		     GPIO1B1_UART21_SOUT << GPIO1B1_SHIFT);
-	/* Set channel C as UART2 input */
+	/* Set channel 1 as UART2 input */
 	rk_clrsetreg(&grf->con_iomux,
 		     CON_IOMUX_UART2SEL_MASK,
 		     CON_IOMUX_UART2SEL_21 << CON_IOMUX_UART2SEL_SHIFT);
+#endif
 }
 
 #define SGRF_DDR_CON0 0x10150000
