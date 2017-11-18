@@ -1,5 +1,9 @@
 if ROCKCHIP_RK322X
 
+config TARGET_A95X_R1
+	bool "Nexbox A95X R1"
+	select BOARD_LATE_INIT
+
 config TARGET_EVB_RK3229
 	bool "EVB_RK3229"
 	select BOARD_LATE_INIT
@@ -38,6 +42,7 @@ config SYS_MALLOC_F_LEN
 config SPL_SERIAL_SUPPORT
 	default y
 
+source "board/nexbox/a95x_r1/Kconfig"
 source "board/rockchip/evb_rk3229/Kconfig"
 
 endif

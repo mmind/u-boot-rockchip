@@ -1,0 +1,6 @@
+A95X-R1
+M:      Heiko Stuebner <heiko@sntech.de>
+S:      Maintained
+F:      board/rockchip/a95x_r1
+F:      include/configs/a95x_r1.h
+F:      configs/a95x-r1_defconfig

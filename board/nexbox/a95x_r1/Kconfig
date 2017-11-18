@@ -1,0 +1,15 @@
+if TARGET_A95X_R1
+
+config SYS_BOARD
+	default "a95x_r1"
+
+config SYS_VENDOR
+	default "nexbox"
+
+config SYS_CONFIG_NAME
+	default "a95x_r1"
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+
+endif
