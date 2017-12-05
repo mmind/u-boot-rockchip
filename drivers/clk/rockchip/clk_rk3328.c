@@ -13,6 +13,7 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/cru_rk3328.h>
 #include <asm/arch/hardware.h>
+#include <asm/arch/grf_rk3328.h>
 #include <asm/io.h>
 #include <dm/lists.h>
 #include <dt-bindings/clock/rk3328-cru.h>
@@ -393,6 +394,22 @@ static ulong rk3328_i2c_set_clk(struct rk3328_cru *cru, ulong clk_id, uint hz)
 	return DIV_TO_RATE(GPLL_HZ, src_clk_div);
 }
 
+static int rockchip_mac_set_clk(struct rk3328_cru *cru,
+				int periph, uint freq)
+{
+	struct rk3328_grf_regs *grf;
+
+	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
+	/* Assuming mac_clk is fed by an external clock */
+	rk_clrsetreg(&grf->soc_con[4], BIT(14),
+		     BIT(14));
+
+	rk_clrsetreg(&grf->mac_con[1], BIT(10),
+		     BIT(10));
+
+	return 0;
+}
+
 static ulong rk3328_mmc_get_clk(struct rk3328_cru *cru, uint clk_id)
 {
 	u32 div, con, con_id;
@@ -557,6 +574,9 @@ static ulong rk3328_clk_set_rate(struct clk *clk, ulong rate)
 	case SCLK_I2C2:
 	case SCLK_I2C3:
 		ret = rk3328_i2c_set_clk(priv->cru, clk->id, rate);
+		break;
+	case SCLK_MAC2IO:
+		ret = rockchip_mac_set_clk(priv->cru, clk->id, rate);
 		break;
 	case SCLK_PWM:
 		ret = rk3328_pwm_set_clk(priv->cru, rate);

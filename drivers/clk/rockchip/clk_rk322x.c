@@ -239,6 +239,16 @@ static ulong rockchip_mmc_get_clk(struct rk322x_cru *cru, uint clk_general_rate,
 	return DIV_TO_RATE(src_rate, div) / 2;
 }
 
+static int rk322x_mac_set_clk(struct rk322x_cru *cru,
+			      int periph, uint freq)
+{
+	/* Assuming mac_clk is fed by an external clock */
+	rk_clrsetreg(&cru->cru_clksel_con[5], BIT(5),
+		     BIT(5));
+
+	return 0;
+}
+
 static ulong rockchip_mmc_set_clk(struct rk322x_cru *cru, uint clk_general_rate,
 				  int periph, uint freq)
 {
@@ -351,6 +361,9 @@ static ulong rk322x_clk_set_rate(struct clk *clk, ulong rate)
 		break;
 	case CLK_DDR:
 		new_rate = rk322x_ddr_set_clk(priv->cru, rate);
+		break;
+	case SCLK_MAC:
+		new_rate = rk322x_mac_set_clk(priv->cru, clk->id, rate);
 		break;
 	default:
 		return -ENOENT;
