@@ -135,7 +135,7 @@
 	status = "okay";
 };
 
-/*&gmac2io {
+&gmac2io {
 	phy-supply = <&vcc_phy>;
 	phy-mode = "rgmii";
 	clock_in_out = "input";
@@ -149,7 +149,7 @@
 	tx_delay = <0x26>;
 	rx_delay = <0x11>;
 	status = "okay";
-}; */
+};
 
 &i2c1 {
 	status = "okay";
