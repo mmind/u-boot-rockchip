@@ -7,7 +7,7 @@
 rk_tools/loaderimage --pack --uboot ./u-boot-dtb.bin uboot.img
 
 dd if=rk_tools/3328/rk3328_ddr_786MHz_v1.06.bin of=DDRTEMP bs=4 skip=1
-tools/mkimage -n rk3328 -T rksd -d DDRTEMP idbloader.img
+rk_tools/3328/mkimage -n rk3328 -T rksd -d DDRTEMP idbloader.img
 cat rk_tools/3328/rk3328_miniloader_v2.43.bin >> idbloader.img
 #cp idbloader.img ${OUT}/u-boot/	
 #cp rk_tools/3328/rk3328_loader_ddr786_v1.06.243.bin ${OUT}/u-boot/
