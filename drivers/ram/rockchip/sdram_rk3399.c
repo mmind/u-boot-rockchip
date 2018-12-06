@@ -1189,7 +1189,7 @@ static int rk3399_dmc_probe(struct udevice *dev)
 {
 #ifdef CONFIG_SPL_BUILD
 	if (rk3399_dmc_init(dev))
-		return 0;
+		do_reset(NULL, 0, 0, NULL);
 #else
 	struct dram_info *priv = dev_get_priv(dev);
 
