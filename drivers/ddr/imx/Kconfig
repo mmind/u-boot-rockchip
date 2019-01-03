@@ -1,1 +1,3 @@
+if ARCH_IMX8M
 source "drivers/ddr/imx/imx8m/Kconfig"
+endif
