@@ -98,10 +98,20 @@ static inline void __raw_readsl(unsigned long addr, void *data, int longlen)
 #define writel(v,c)	({ u32 __v = v; __iowmb(); __arch_putl(__v,c); __v; })
 #define writeq(v,c)	({ u64 __v = v; __iowmb(); __arch_putq(__v,c); __v; })
 
+#define writeb_relaxed(v,c)	__raw_writeb(v, c)
+#define writew_relaxed(v,c)	__raw_writew(v, c)
+#define writel_relaxed(v,c)	__raw_writel(v, c)
+#define writeq_relaxed(v,c)	__raw_writeq(v, c)
+
 #define readb(c)	({ u8  __v = __arch_getb(c); __iormb(); __v; })
 #define readw(c)	({ u16 __v = __arch_getw(c); __iormb(); __v; })
 #define readl(c)	({ u32 __v = __arch_getl(c); __iormb(); __v; })
 #define readq(c)	({ u64 __v = __arch_getq(c); __iormb(); __v; })
+
+#define readb_relaxed(c)	__raw_readb(c)
+#define readw_relaxed(c)	__raw_readw(c)
+#define readl_relaxed(c)	__raw_readl(c)
+#define readq_relaxed(c)	__raw_readq(c)
 
 /*
  * The compiler seems to be incapable of optimising constants
