@@ -16,11 +16,12 @@
 int fdt_psci(void *fdt)
 {
 #if defined(CONFIG_ARMV7_PSCI) || defined(CONFIG_ARMV8_PSCI) || \
-	defined(CONFIG_SEC_FIRMWARE_ARMV8_PSCI)
+	defined(CONFIG_SEC_FIRMWARE_ARMV8_PSCI) || defined(CONFIG_ARM_PSCI_FW)
 	int nodeoff;
 	unsigned int psci_ver = 0;
 	int tmp;
 
+printf("%s: updating dt enable-methods\n", __func__);
 	nodeoff = fdt_path_offset(fdt, "/cpus");
 	if (nodeoff < 0) {
 		printf("couldn't find /cpus\n");

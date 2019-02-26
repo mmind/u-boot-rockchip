@@ -16,6 +16,8 @@ config ROCKCHIP_RK3036
 config ROCKCHIP_RK3128
 	bool "Support Rockchip RK3128"
 	select CPU_V7A
+	select SUPPORT_SPL
+	select SPL
 	help
 	  The Rockchip RK3128 is a ARM-based SoC with a quad-core Cortex-A7
 	  including NEON and GPU, Mali-400 graphics, several DDR3 options
@@ -164,6 +166,7 @@ config ROCKCHIP_USB_UART
 config SPL_ROCKCHIP_BACK_TO_BROM
 	bool "SPL returns to bootrom"
 	default y if ROCKCHIP_RK3036
+	default y if ROCKCHIP_RK3128
 	select ROCKCHIP_BROM_HELPER
 	depends on SPL
 	help
@@ -184,6 +187,7 @@ config TPL_ROCKCHIP_BACK_TO_BROM
 config ROCKCHIP_BOOT_MODE_REG
 	hex "Rockchip boot mode flag register address"
 	default 0x200081c8 if ROCKCHIP_RK3036
+	default 0x200081c8 if ROCKCHIP_RK3128
 	default 0x20004040 if ROCKCHIP_RK3188
 	default 0x110005c8 if ROCKCHIP_RK322X
 	default 0xff730094 if ROCKCHIP_RK3288

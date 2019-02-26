@@ -1,0 +1,6 @@
+FIREPRIME-RK3128
+M:      Heiko Stuebner <heiko@sntech.de>
+S:      Maintained
+F:      board/firefly/fireprime-rk3128
+F:      include/configs/fireprime-rk3128.h
+F:      configs/fireprime-rk3128_defconfig

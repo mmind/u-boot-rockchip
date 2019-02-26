@@ -11,6 +11,10 @@ config TARGET_EVB_RK3128
 	  with full function and phisical connectors support like
 	  usb2.0 host ports, LVDS, JTAG, MAC, SDcard, HDMI, USB-2-serial...
 
+config TARGET_FIREPRIME_RK3128
+	bool "RK3128 Fireprime board"
+	select BOARD_LATE_INIT
+
 endchoice
 
 config SYS_SOC
@@ -19,6 +23,10 @@ config SYS_SOC
 config SYS_MALLOC_F_LEN
 	default 0x0800
 
+config SPL_SERIAL_SUPPORT
+	default y
+
+source "board/firefly/fireprime-rk3128/Kconfig"
 source "board/rockchip/evb_rk3128/Kconfig"
 
 endif

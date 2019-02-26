@@ -12,6 +12,7 @@
 #include <asm/arch/periph.h>
 #include <asm/arch/grf_rk3128.h>
 #include <asm/arch/boot_mode.h>
+#include <asm/arch/sdram_rk3128.h>
 #include <asm/arch/timer.h>
 #include <power/regulator.h>
 
@@ -44,18 +45,31 @@ int board_init(void)
 	return 0;
 }
 
-int dram_init_banksize(void)
+/*int dram_init_banksize(void)
 {
 	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
-	gd->bd->bi_dram[0].size = 0x8400000;
+	gd->bd->bi_dram[0].size = 0x8400000; */
 	/* Reserve 0xe00000(14MB) for OPTEE with TA enabled, otherwise 2MB */
-	gd->bd->bi_dram[1].start = CONFIG_SYS_SDRAM_BASE
+/*	gd->bd->bi_dram[1].start = CONFIG_SYS_SDRAM_BASE
 				+ gd->bd->bi_dram[0].size + 0xe00000;
 	gd->bd->bi_dram[1].size = gd->bd->bi_dram[0].start
 				+ gd->ram_size - gd->bd->bi_dram[1].start;
 
 	return 0;
+} */
+
+#if !CONFIG_IS_ENABLED(RAM)
+/*
+ * When CONFIG_RAM is enabled, the dram_init() function is implemented
+ * in sdram_common.c.
+ */
+int dram_init(void)
+{
+	gd->ram_size = sdram_size();
+
+	return 0;
 }
+#endif
 
 #ifndef CONFIG_SYS_DCACHE_OFF
 void enable_caches(void)

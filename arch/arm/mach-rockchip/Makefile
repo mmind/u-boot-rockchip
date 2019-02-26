@@ -13,6 +13,7 @@ obj-tpl-$(CONFIG_ROCKCHIP_RK3288) += rk3288-board-tpl.o
 obj-tpl-$(CONFIG_ROCKCHIP_RK3368) += rk3368-board-tpl.o
 
 obj-spl-$(CONFIG_ROCKCHIP_RK3036) += rk3036-board-spl.o
+obj-spl-$(CONFIG_ROCKCHIP_RK3128) += rk3128-board-spl.o
 obj-spl-$(CONFIG_ROCKCHIP_RK3188) += rk3188-board-spl.o
 obj-spl-$(CONFIG_ROCKCHIP_RK322X) += rk322x-board-spl.o
 obj-spl-$(CONFIG_ROCKCHIP_RK3288) += rk3288-board-spl.o
