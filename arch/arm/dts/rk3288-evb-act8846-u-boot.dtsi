@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+ OR X11
+// SPDX-License-Identifier: GPL-2.0+
 /*
- * (C) Copyright 2016 Rockchip Electronics Co., Ltd
+ * Copyright (c) 2019 Fuzhou Rockchip Electronics Co., Ltd.
  */
-
-/dts-v1/;
-#include "rk3288-evb.dtsi"
-
-/ {
-	model = "Evb-RK3288";
-	compatible = "evb-rk3288,evb-rk3288", "rockchip,rk3288";
-
-	chosen {
-		stdout-path = &uart2;
-	};
-};
 
 &dmc {
 	rockchip,pctl-timing = <0x215 0xc8 0x0 0x35 0x26 0x2 0x70 0x2000d
@@ -24,19 +12,6 @@
 	rockchip,phy-timing = <0x48d7dd93 0x187008d8 0x121076
 		0x0 0xc3 0x6 0x2>;
 	rockchip,sdram-params = <0x20d266a4 0x5b6 2 533000000 6 9 0>;
-};
-
-&pinctrl {
-	u-boot,dm-pre-reloc;
-};
-
-&pwm1 {
-	status = "okay";
-};
-
-&uart2 {
-	u-boot,dm-pre-reloc;
-	reg-shift = <2>;
 };
 
 &sdmmc {
@@ -52,5 +27,13 @@
 };
 
 &gpio8 {
+	u-boot,dm-pre-reloc;
+};
+
+&pinctrl {
+	u-boot,dm-pre-reloc;
+};
+
+&uart2 {
 	u-boot,dm-pre-reloc;
 };

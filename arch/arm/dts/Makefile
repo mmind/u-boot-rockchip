@@ -65,7 +65,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3128-evb.dtb \
 	rk3188-radxarock.dtb \
 	rk3229-evb.dtb \
-	rk3288-evb.dtb \
+	rk3288-evb-act8846.dtb \
+	rk3288-evb-rk808.dtb \
 	rk3288-fennec.dtb \
 	rk3288-firefly.dtb \
 	rk3288-miqi.dtb \
