@@ -188,6 +188,7 @@ config SPL_ROCKCHIP_BACK_TO_BROM
 
 config TPL_ROCKCHIP_BACK_TO_BROM
 	bool "TPL returns to bootrom"
+	default y if ROCKCHIP_RK3288
 	default y if ROCKCHIP_RK3368
 	select ROCKCHIP_BROM_HELPER
 	depends on TPL
