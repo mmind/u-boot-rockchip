@@ -3,6 +3,8 @@
  * (C) Copyright 2016 Rockchip Electronics Co., Ltd
  */
 
+#ifndef CONFIG_TPL_BUILD
+
 #include <common.h>
 #include <spl.h>
 
@@ -12,3 +14,5 @@ void board_boot_order(u32 *spl_boot_list)
 	spl_boot_list[0] = BOOT_DEVICE_MMC2;
 	spl_boot_list[1] = BOOT_DEVICE_MMC1;
 }
+
+#endif
