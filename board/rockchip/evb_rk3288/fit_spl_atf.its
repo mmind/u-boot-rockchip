@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: GPL-2.0+ OR X11 */
+/*
+ * Copyright (C) 2017 Theobroma Systems Design und Consulting GmbH
+ *
+ * Minimal dts for a SPL FIT image payload.
+ */
+
+/dts-v1/;
+
+/ {
+	description = "FIT image with U-Boot proper, ATF bl32, DTB";
+	#address-cells = <1>;
+
+	images {
+		uboot {
+			description = "U-Boot (64-bit)";
+			data = /incbin/("../../../u-boot-nodtb.bin");
+			type = "standalone";
+			os = "U-Boot";
+			arch = "arm64";
+			compression = "none";
+			load = <0x00200000>;
+		};
+		atf {
+			description = "ARM Trusted Firmware";
+			data = /incbin/("../../../bl32-rk3288.bin");
+			type = "firmware";
+			os = "arm-trusted-firmware";
+			arch = "arm64";
+			compression = "none";
+			load = <0x00100000>;
+			entry = <0x00100000>;
+		};
+
+		fdt {
+			description = "RK3288-EVB flat device-tree";
+			data = /incbin/("../../../u-boot.dtb");
+			type = "flat_dt";
+			compression = "none";
+		};
+	};
+
+	configurations {
+		default = "conf";
+		conf {
+			description = "Rockchip RK3288-EVB";
+			firmware = "atf";
+			loadables = "uboot";
+			fdt = "fdt";
+		};
+	};
+};
