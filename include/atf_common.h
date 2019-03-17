@@ -32,6 +32,8 @@
 #define MODE_RW_64	0x0
 #define MODE_RW_32	0x1
 
+#ifdef CONFIG_ARM64
+
 #define MODE_EL_SHIFT	0x2
 #define MODE_EL_MASK	0x3
 #define MODE_EL3	0x3
@@ -65,6 +67,53 @@
 #define DAIF_DBG_BIT (1<<3)
 #define DISABLE_ALL_EXECPTIONS	\
 	(DAIF_FIQ_BIT | DAIF_IRQ_BIT | DAIF_ABT_BIT | DAIF_DBG_BIT)
+
+#else /* CONFIG_ARM64 */
+
+#define SPSR_E_SHIFT		9
+#define SPSR_E_MASK		0x1
+#define SPSR_E_LITTLE		0
+#define SPSR_E_BIG		1
+
+#define SPSR_T_SHIFT		5
+#define SPSR_T_MASK		0x1
+#define SPSR_T_ARM		0
+#define SPSR_T_THUMB		1
+
+#define MODE32_SHIFT		0
+#define MODE32_MASK		0xf
+#define MODE32_usr		0x0
+#define MODE32_fiq		0x1
+#define MODE32_irq		0x2
+#define MODE32_svc		0x3
+#define MODE32_mon		0x6
+#define MODE32_abt		0x7
+#define MODE32_hyp		0xa
+#define MODE32_und		0xb
+#define MODE32_sys		0xf
+
+#define SPSR_AIF_SHIFT		6
+#define SPSR_AIF_MASK		0x07
+
+#define SPSR_MODE32(mode, isa, endian, aif)		\
+	(MODE_RW_32 << MODE_RW_SHIFT |			\
+	((mode) & MODE32_MASK) << MODE32_SHIFT |	\
+	((isa) & SPSR_T_MASK) << SPSR_T_SHIFT |		\
+	((endian) & SPSR_E_MASK) << SPSR_E_SHIFT |	\
+	((aif) & SPSR_AIF_MASK) << SPSR_AIF_SHIFT)
+
+#define SPSR_FIQ		(1 << 6)
+#define SPSR_IRQ		(1 << 7)
+#define SPSR_SERROR		(1 << 8)
+#define SPSR_EXCEPTION_MASK	(SPSR_FIQ | SPSR_IRQ | SPSR_SERROR)
+
+#define AIF_FIQ_BIT		(1 << 0)
+#define AIF_IRQ_BIT		(1 << 1)
+#define AIF_ABT_BIT		(1 << 2)
+#define DISABLE_ALL_EXECPTIONS	\
+	(AIF_FIQ_BIT | AIF_IRQ_BIT | AIF_ABT_BIT)
+
+#endif /* CONFIG_ARM64 */
 
 #ifndef __ASSEMBLY__
 
@@ -152,6 +201,9 @@ struct image_desc {
  * BL31 image information is mandatory if this structure is used. If either of
  * the optional BL32 and BL33 image information is not provided, this is
  * indicated by the respective image_info pointers being zero.
+ *
+ * In ARM32 mode BL31 image information is to be left empty and BL32
+ * information becomes mandatory.
  ******************************************************************************/
 struct bl31_params {
 	struct param_header h;
