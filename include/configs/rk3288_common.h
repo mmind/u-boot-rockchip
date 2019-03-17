@@ -20,7 +20,7 @@
 #ifdef CONFIG_SPL_ROCKCHIP_BACK_TO_BROM
 /* Bootrom will load u-boot binary to 0x0 once return from SPL */
 #endif
-#define CONFIG_SYS_INIT_SP_ADDR		0x00100000
+#define CONFIG_SYS_INIT_SP_ADDR		0x00300000
 #define CONFIG_SYS_LOAD_ADDR		0x00800800
 #define CONFIG_SPL_STACK		0xff718000
 
@@ -43,9 +43,9 @@
 
 /* usb host support */
 #define ENV_MEM_LAYOUT_SETTINGS \
-	"scriptaddr=0x00000000\0" \
-	"pxefile_addr_r=0x00100000\0" \
-	"fdt_addr_r=0x01f00000\0" \
+	"scriptaddr=0x00500000\0" \
+	"pxefile_addr_r=0x00600000\0" \
+	"fdt_addr_r=0x5600000\0" \
 	"kernel_addr_r=0x02000000\0" \
 	"ramdisk_addr_r=0x04000000\0"
 
