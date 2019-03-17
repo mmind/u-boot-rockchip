@@ -17,6 +17,9 @@
 static struct bl2_to_bl31_params_mem bl31_params_mem;
 static struct bl31_params *bl2_to_bl31_params;
 
+typedef void (*atf_entry_t)(struct bl31_params *params, void *plat_params);
+
+#ifdef CONFIG_ARM64
 /**
  * bl2_plat_get_bl31_params() - prepare params for bl31.
  *
@@ -83,8 +86,6 @@ static inline void raw_write_daif(unsigned int daif)
 	__asm__ __volatile__("msr DAIF, %0\n\t" : : "r" (daif) : "memory");
 }
 
-typedef void (*atf_entry_t)(struct bl31_params *params, void *plat_params);
-
 static void bl31_entry(uintptr_t bl31_entry, uintptr_t bl33_entry,
 		       uintptr_t fdt_addr)
 {
@@ -98,6 +99,83 @@ static void bl31_entry(uintptr_t bl31_entry, uintptr_t bl33_entry,
 
 	atf_entry((void *)bl31_params, (void *)fdt_addr);
 }
+#else /* CONFIG_ARM64 */
+static struct bl31_params *bl2_plat_get_bl32_params(uintptr_t bl33_entry)
+{
+	struct entry_point_info *bl33_ep_info;
+
+	/*
+	 * Initialise the memory for all the arguments that needs to
+	 * be passed to BL31
+	 */
+	memset(&bl31_params_mem, 0, sizeof(struct bl2_to_bl31_params_mem));
+
+	/* Assign memory for TF related information */
+	bl2_to_bl31_params = &bl31_params_mem.bl31_params;
+	SET_PARAM_HEAD(bl2_to_bl31_params, ATF_PARAM_BL31, ATF_VERSION_1, 0);
+
+	/* Fill BL31 related information */
+	SET_PARAM_HEAD(bl2_to_bl31_params->bl31_image_info,
+		       ATF_PARAM_IMAGE_BINARY, ATF_VERSION_1, 0);
+
+	/* Fill BL32 related information */
+	bl2_to_bl31_params->bl32_ep_info = &bl31_params_mem.bl32_ep_info;
+	SET_PARAM_HEAD(bl2_to_bl31_params->bl32_ep_info, ATF_PARAM_EP,
+		       ATF_VERSION_1, 0);
+	bl2_to_bl31_params->bl32_image_info = &bl31_params_mem.bl32_image_info;
+	SET_PARAM_HEAD(bl2_to_bl31_params->bl32_image_info,
+		       ATF_PARAM_IMAGE_BINARY, ATF_VERSION_1, 0);
+
+	/* Fill BL33 related information */
+	bl2_to_bl31_params->bl33_ep_info = &bl31_params_mem.bl33_ep_info;
+	bl33_ep_info = &bl31_params_mem.bl33_ep_info;
+	SET_PARAM_HEAD(bl33_ep_info, ATF_PARAM_EP, ATF_VERSION_1,
+		       ATF_EP_NON_SECURE);
+
+	/* BL33 expects to receive the primary CPU MPID (through r0) */
+	bl33_ep_info->args.arg0 = 0xffff & read_mpidr();
+	bl33_ep_info->pc = bl33_entry;
+	bl33_ep_info->spsr = SPSR_MODE32(MODE32_hyp,
+					 SPSR_T_ARM,
+#ifdef __ARMEB__
+					 SPSR_E_BIG,
+#else
+					 SPSR_E_LITTLE,
+#endif
+					 DISABLE_ALL_EXECPTIONS);
+
+	bl2_to_bl31_params->bl33_image_info = &bl31_params_mem.bl33_image_info;
+	SET_PARAM_HEAD(bl2_to_bl31_params->bl33_image_info,
+		       ATF_PARAM_IMAGE_BINARY, ATF_VERSION_1, 0);
+
+	return bl2_to_bl31_params;
+}
+
+static inline void raw_write_aif(unsigned int aif)
+{
+	unsigned int val;
+
+	val = get_cpsr();
+	val &= ~SPSR_EXCEPTION_MASK;
+	val |= aif;
+
+	__asm__ __volatile__("msr cpsr_c, %0\n\t" : : "r" (val)  );
+}
+
+static void bl32_entry(uintptr_t bl32_entry, uintptr_t bl33_entry,
+		       uintptr_t fdt_addr)
+{
+	struct bl31_params *bl31_params;
+	atf_entry_t  atf_entry = (atf_entry_t)bl32_entry;
+
+	bl31_params = bl2_plat_get_bl32_params(bl33_entry);
+
+	raw_write_aif(SPSR_EXCEPTION_MASK);
+	dcache_disable();
+
+	atf_entry((void *)bl31_params, (void *)fdt_addr);
+}
+#endif /* CONFIG_ARM64 */
 
 static int spl_fit_images_find_uboot(void *blob)
 {
@@ -171,5 +249,9 @@ void spl_invoke_atf(struct spl_image_info *spl_image)
 	 * We don't provide a BL3-2 entry yet, but this will be possible
 	 * using similar logic.
 	 */
+#ifdef CONFIG_ARM64
 	bl31_entry(spl_image->entry_point, bl33_entry, platform_param);
+#else
+	bl32_entry(spl_image->entry_point, bl33_entry, platform_param);
+#endif
 }
