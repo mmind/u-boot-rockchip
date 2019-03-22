@@ -335,6 +335,7 @@ int board_early_init_f(void)
 		return ret;
 	}
 
+	/* Select RK PWM (as opposed to old PWM solution) */
 	rk_setreg(GRF_SOC_CON2, 1 << 0);
 
 	/*
