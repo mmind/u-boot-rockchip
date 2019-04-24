@@ -202,10 +202,18 @@
 };
 
 &i2c0 {
+	u-boot,dm-pre-reloc;
 	status = "okay";
 	i2c-scl-rising-time-ns = <168>;
 	i2c-scl-falling-time-ns = <4>;
 	clock-frequency = <400000>;
+
+	spd_eeprom: spd_eeprom {
+		u-boot,dm-pre-reloc;
+		status = "okay";
+		compatible = "i2c-eeprom";
+		reg = <0x50>;
+	};
 
 	vdd_gpu: vdd_gpu {
 		status = "okay";
@@ -668,4 +676,8 @@
 
 &spi5 {
 	status = "okay";
+};
+
+&dmc {
+        theobroma-systems,spd-eeprom = <&spd_eeprom>;
 };
