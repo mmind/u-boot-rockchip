@@ -16,6 +16,7 @@
 #define MAX_ROCKCHIP_GPIO_PER_BANK      32
 #define RK_FUNC_GPIO                    0
 
+#if CONFIG_IS_ENABLED(PINCTRL_FULL)
 static int rockchip_verify_config(struct udevice *dev, u32 bank, u32 pin)
 {
 	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
@@ -760,11 +761,11 @@ static struct rockchip_pin_ctrl *rockchip_pinctrl_get_soc_data(struct udevice *d
 
 	return ctrl;
 }
+#endif
 
 int rockchip_pinctrl_probe(struct udevice *dev)
 {
 	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
-	struct rockchip_pin_ctrl *ctrl;
 	struct udevice *syscon;
 	struct regmap *regmap;
 	int ret = 0;
@@ -798,12 +799,14 @@ int rockchip_pinctrl_probe(struct udevice *dev)
 		priv->regmap_pmu = regmap;
 	}
 
-	ctrl = rockchip_pinctrl_get_soc_data(dev);
+#if CONFIG_IS_ENABLED(PINCTRL_FULL)
+	struct rockchip_pin_ctrl *ctrl = rockchip_pinctrl_get_soc_data(dev);
 	if (!ctrl) {
 		debug("driver data not available\n");
 		return -EINVAL;
 	}
 
 	priv->ctrl = ctrl;
+#endif
 	return 0;
 }

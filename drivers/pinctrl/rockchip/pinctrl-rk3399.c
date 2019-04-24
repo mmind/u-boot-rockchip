@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2019 Rockchip Electronics Co., Ltd
+ * (C) Copyright 2019 Theobroma Systems Design und Consulting GmbH
  */
 
 #include <common.h>
@@ -8,6 +9,8 @@
 #include <dm/pinctrl.h>
 #include <regmap.h>
 #include <syscon.h>
+#include <asm/arch/grf_rk3399.h>
+#include <asm/arch/periph.h>
 
 #include "pinctrl-rockchip.h"
 
@@ -172,6 +175,136 @@ static struct rockchip_pin_ctrl rk3399_pin_ctrl = {
 		.drv_calc_reg		= rk3399_calc_drv_reg_and_bit,
 };
 
+static void pinctrl_rk3399_i2c_config(struct udevice *dev, int i2c_id)
+{
+	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
+
+	debug("%s: i2c_id=%d\n", __func__, i2c_id);
+	switch (i2c_id) {
+	case PERIPH_ID_I2C0:
+		debug("here\n");
+		regmap_write(priv->regmap_pmu,
+			     offsetof(struct rk3399_pmugrf_regs,
+				      gpio1b_iomux),
+			     PMUGRF_GPIO1B7_SEL_MASK << 16 |
+			     PMUGRF_I2C0PMU_SDA << PMUGRF_GPIO1B7_SEL_SHIFT);
+		regmap_write(priv->regmap_pmu,
+			     offsetof(struct rk3399_pmugrf_regs,
+				      gpio1c_iomux),
+			     PMUGRF_GPIO1C0_SEL_MASK << 16 |
+			     PMUGRF_I2C0PMU_SCL << PMUGRF_GPIO1C0_SEL_SHIFT);
+		break;
+	}
+}
+
+static int rk3399_pinctrl_request(struct udevice *dev, int func, int flags)
+{
+	debug("%s: func=%x, flags=%x\n", __func__, func, flags);
+	switch (func) {
+	case PERIPH_ID_I2C0:
+	case PERIPH_ID_I2C1:
+	case PERIPH_ID_I2C2:
+	case PERIPH_ID_I2C3:
+	case PERIPH_ID_I2C4:
+	case PERIPH_ID_I2C5:
+	case PERIPH_ID_I2C6:
+	case PERIPH_ID_I2C7:
+	case PERIPH_ID_I2C8:
+		pinctrl_rk3399_i2c_config(dev, func);
+		break;
+#if 0
+	case PERIPH_ID_SPI0:
+	case PERIPH_ID_SPI1:
+	case PERIPH_ID_SPI2:
+	case PERIPH_ID_SPI3:
+	case PERIPH_ID_SPI4:
+	case PERIPH_ID_SPI5:
+		pinctrl_rk3399_spi_config(priv->grf, priv->pmugrf, func, flags);
+		break;
+#endif
+#if 0
+	case PERIPH_ID_UART0:
+	case PERIPH_ID_UART1:
+	case PERIPH_ID_UART2:
+	case PERIPH_ID_UART3:
+	case PERIPH_ID_UART4:
+		pinctrl_rk3399_uart_config(priv->grf, priv->pmugrf, func);
+		break;
+	case PERIPH_ID_SDCARD:
+	case PERIPH_ID_EMMC:
+		pinctrl_rk3399_sdmmc_config(priv->grf, func);
+		break;
+#endif
+	default:
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int rk3399_pinctrl_get_periph_id(struct udevice *dev,
+					struct udevice *periph)
+{
+	debug("%s: periph addr 0x%llx\n", __func__, dev_read_addr(periph));
+#if !CONFIG_IS_ENABLED(OF_PLATDATA)
+	u32 cell[3];
+	int ret;
+
+	ret = dev_read_u32_array(periph, "interrupts", cell, ARRAY_SIZE(cell));
+	if (ret < 0)
+		return -EINVAL;
+
+	switch (cell[1]) {
+	case 68:
+		return PERIPH_ID_SPI0;
+	case 53:
+		return PERIPH_ID_SPI1;
+	case 52:
+		return PERIPH_ID_SPI2;
+	case 132:
+		return PERIPH_ID_SPI5;
+	case 57:
+		return PERIPH_ID_I2C0;
+	case 59:
+		return PERIPH_ID_I2C1;
+	case 35:
+		return PERIPH_ID_I2C2;
+	case 34:
+		return PERIPH_ID_I2C3;
+	case 56:
+		return PERIPH_ID_I2C4;
+	case 38:
+		return PERIPH_ID_I2C5;
+	case 37:
+		return PERIPH_ID_I2C6;
+	case 36:
+		return PERIPH_ID_I2C7;
+	case 58:
+		return PERIPH_ID_I2C8;
+	case 65:
+		return PERIPH_ID_SDCARD;
+	case 11:
+		return PERIPH_ID_EMMC;
+	}
+#endif
+
+	return -ENOENT;
+}
+
+static int rk3399_pinctrl_set_state_simple(struct udevice *dev,
+					   struct udevice *periph)
+{
+	int func = rk3399_pinctrl_get_periph_id(dev, periph);
+	if (func < 0)
+		return func;
+
+	return rk3399_pinctrl_request(dev, func, 0);
+}
+
+const struct pinctrl_ops rk3399_pinctrl_simple_ops = {
+	.set_state_simple = rk3399_pinctrl_set_state_simple,
+};
+
 static const struct udevice_id rk3399_pinctrl_ids[] = {
 	{
 		.compatible = "rockchip,rk3399-pinctrl",
@@ -185,7 +318,11 @@ U_BOOT_DRIVER(pinctrl_rk3399) = {
 	.id		= UCLASS_PINCTRL,
 	.of_match	= rk3399_pinctrl_ids,
 	.priv_auto_alloc_size = sizeof(struct rockchip_pinctrl_priv),
+#if CONFIG_IS_ENABLED(PINCTRL_FULL)
 	.ops		= &rockchip_pinctrl_ops,
+#else
+	.ops            = &rk3399_pinctrl_simple_ops,
+#endif
 #if !CONFIG_IS_ENABLED(OF_PLATDATA)
 	.bind		= dm_scan_fdt_dev,
 #endif
