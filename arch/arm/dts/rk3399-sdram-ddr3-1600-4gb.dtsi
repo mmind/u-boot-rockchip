@@ -10,8 +10,8 @@
 		0x10 /* revision level 1.0 */
 		0x0b /* DDR3 SDRAM */
 		0x0b /* module-specific section (bytes 60 ~ 116): LRDIMM */
-		0x34 /* 8 banks, 4 Gb devices */
-		0x19 /* 15 rows, 10 columns */
+		0x35 /* 8 banks, 8 Gb devices */
+		0x21 /* 16 rows, 10 columns */
 		0x03 /* 1.35V and 1.5V operable */
 		0x02 /* 1 rank, x16 device-width */
 		0x02 /* 32 bit (primary) bus-width */
@@ -106,8 +106,8 @@
 		0x2 /* ch0: bw */
 		0x1 /* ch0: dbw */
 		0x0 /* ch0: row_3_4 */
-		0xf /* ch0: cs0_row */
-		0xf /* ch0: cs1_row */
+		0x10 /* ch0: cs0_row */
+		0x10 /* ch0: cs1_row */
 		1 /* ch0: ddrconfig */
 		0x80151015 /* ch0: ddrtiminga0 */
 		0x14040902 /* ch0: ddrtimingb0 */
@@ -121,8 +121,8 @@
 		0x2
 		0x1
 		0x0
-		0xf
-		0xf
+		0x10
+		0x10
 		1
 		0x80151015
 		0x14040902
@@ -133,7 +133,7 @@
 		800 /* base: ddr_freq */
 		3 /* base: dramtype */
 		2 /* base: num_channels */
-		9 /* base: stride */
+		13 /* base: stride */
 		1 /* base: odt */
 	>;
 };

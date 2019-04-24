@@ -89,7 +89,9 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3399-gru-bob.dtb \
 	rk3399-puma-ddr1333.dtb \
 	rk3399-puma-ddr1600.dtb \
+	rk3399-puma-ddr1600-4gb.dtb \
 	rk3399-puma-ddr1866.dtb \
+	rk3399-puma-ddr1866-4gb.dtb \
 	rk3399-rock960.dtb \
 	rv1108-elgin-r1.dtb \
 	rv1108-evb.dtb

@@ -103,9 +103,11 @@ struct rk3399_base_params {
 struct rk3399_sdram_params {
 	struct rk3399_sdram_channel ch[2];
 	struct rk3399_base_params base;
+#if 0  // TODO: revert, once completely split
 	struct rk3399_ddr_pctl_regs pctl_regs;
 	struct rk3399_ddr_pi_regs pi_regs;
 	struct rk3399_ddr_publ_regs phy_regs;
+#endif
 };
 
 #define PI_CA_TRAINING		(1 << 0)
