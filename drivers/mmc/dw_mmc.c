@@ -134,7 +134,7 @@ static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 		mask = dwmci_readl(host, DWMCI_RINTSTS);
 		/* Error during data transfer. */
 		if (mask & (DWMCI_DATA_ERR | DWMCI_DATA_TOUT)) {
-			debug("%s: DATA ERROR!\n", __func__);
+			pr_err("%s: data error or timeout!\n", __func__);
 			ret = -EINVAL;
 			break;
 		}
