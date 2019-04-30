@@ -78,9 +78,11 @@ static void boot_fdt_reserve_region(struct lmb *lmb, uint64_t addr,
 		debug("   reserving fdt memory region: addr=%llx size=%llx\n",
 		      (unsigned long long)addr, (unsigned long long)size);
 	} else {
-		puts("ERROR: reserving fdt memory region failed ");
-		printf("(addr=%llx size=%llx)\n",
-		       (unsigned long long)addr, (unsigned long long)size);
+		if (addr && size) {
+			puts("ERROR: reserving fdt memory region failed ");
+			printf("(addr=%llx size=%llx)\n",
+			(unsigned long long)addr, (unsigned long long)size);
+		}
 	}
 }
 
