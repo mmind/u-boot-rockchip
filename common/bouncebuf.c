@@ -26,6 +26,11 @@ static int addr_aligned(struct bounce_buffer *state)
 		return 0;
 	}
 
+	/* Rockchip hack */
+	if ((ulong)state->user_buffer > 0xff000000 ||
+	    (ulong)state->user_buffer + state->len > 0xff000000)
+		return 0;
+
 	/* Aligned */
 	return 1;
 }
