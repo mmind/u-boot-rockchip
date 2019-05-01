@@ -182,7 +182,6 @@ static void pinctrl_rk3399_i2c_config(struct udevice *dev, int i2c_id)
 	debug("%s: i2c_id=%d\n", __func__, i2c_id);
 	switch (i2c_id) {
 	case PERIPH_ID_I2C0:
-		debug("here\n");
 		regmap_write(priv->regmap_pmu,
 			     offsetof(struct rk3399_pmugrf_regs,
 				      gpio1b_iomux),
@@ -202,39 +201,8 @@ static int rk3399_pinctrl_request(struct udevice *dev, int func, int flags)
 	debug("%s: func=%x, flags=%x\n", __func__, func, flags);
 	switch (func) {
 	case PERIPH_ID_I2C0:
-	case PERIPH_ID_I2C1:
-	case PERIPH_ID_I2C2:
-	case PERIPH_ID_I2C3:
-	case PERIPH_ID_I2C4:
-	case PERIPH_ID_I2C5:
-	case PERIPH_ID_I2C6:
-	case PERIPH_ID_I2C7:
-	case PERIPH_ID_I2C8:
 		pinctrl_rk3399_i2c_config(dev, func);
 		break;
-#if 0
-	case PERIPH_ID_SPI0:
-	case PERIPH_ID_SPI1:
-	case PERIPH_ID_SPI2:
-	case PERIPH_ID_SPI3:
-	case PERIPH_ID_SPI4:
-	case PERIPH_ID_SPI5:
-		pinctrl_rk3399_spi_config(priv->grf, priv->pmugrf, func, flags);
-		break;
-#endif
-#if 0
-	case PERIPH_ID_UART0:
-	case PERIPH_ID_UART1:
-	case PERIPH_ID_UART2:
-	case PERIPH_ID_UART3:
-	case PERIPH_ID_UART4:
-		pinctrl_rk3399_uart_config(priv->grf, priv->pmugrf, func);
-		break;
-	case PERIPH_ID_SDCARD:
-	case PERIPH_ID_EMMC:
-		pinctrl_rk3399_sdmmc_config(priv->grf, func);
-		break;
-#endif
 	default:
 		return -EINVAL;
 	}
@@ -255,36 +223,8 @@ static int rk3399_pinctrl_get_periph_id(struct udevice *dev,
 		return -EINVAL;
 
 	switch (cell[1]) {
-	case 68:
-		return PERIPH_ID_SPI0;
-	case 53:
-		return PERIPH_ID_SPI1;
-	case 52:
-		return PERIPH_ID_SPI2;
-	case 132:
-		return PERIPH_ID_SPI5;
 	case 57:
 		return PERIPH_ID_I2C0;
-	case 59:
-		return PERIPH_ID_I2C1;
-	case 35:
-		return PERIPH_ID_I2C2;
-	case 34:
-		return PERIPH_ID_I2C3;
-	case 56:
-		return PERIPH_ID_I2C4;
-	case 38:
-		return PERIPH_ID_I2C5;
-	case 37:
-		return PERIPH_ID_I2C6;
-	case 36:
-		return PERIPH_ID_I2C7;
-	case 58:
-		return PERIPH_ID_I2C8;
-	case 65:
-		return PERIPH_ID_SDCARD;
-	case 11:
-		return PERIPH_ID_EMMC;
 	}
 #endif
 
