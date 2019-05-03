@@ -75,6 +75,7 @@ static int spl_fit_get_image_name(const void *fit, int images,
 	}
 
 	*outname = (char *)str;
+	debug("%s: image name: %s\n", __func__, str);
 	return 0;
 }
 
@@ -211,19 +212,30 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 
 	if (external_data) {
 		/* External data */
-		if (fit_image_get_data_size(fit, node, &len))
+		if (fit_image_get_data_size(fit, node, &len)) {
+			debug("%s: fit_image_get_data_size() failed.\n", __func__);
 			return -ENOENT;
+		}
 
 		load_ptr = (load_addr + align_len) & ~align_len;
 		length = len;
+		debug("load_ptr: 0x%lx\n", load_ptr);
+		debug("data size: %d\n", len);
 
 		overhead = get_aligned_image_overhead(info, offset);
 		nr_sectors = get_aligned_image_size(info, length, offset);
+		debug("overhead: 0x%lx\n", overhead);
+		debug("nr_sectors: %d\n", nr_sectors);
 
-		if (info->read(info,
+		int ret = info->read(info,
 			       sector + get_aligned_image_offset(info, offset),
-			       nr_sectors, (void *)load_ptr) != nr_sectors)
+			       nr_sectors, (void *)load_ptr);
+		if (ret != nr_sectors) {
+			debug("%s: info->read() failed.\n", __func__);
+			debug("Only got %d sectors.\n", ret);
+			debug("read @ 0x%lx\n", (unsigned long)(info->read));
 			return -EIO;
+		}
 
 		debug("External data: dst=%lx, offset=%x, size=%lx\n",
 		      load_ptr, offset, (unsigned long)length);
@@ -380,11 +392,12 @@ int spl_load_simple_fit(struct spl_image_info *spl_image,
 	 * For FIT with external data, data is not loaded in this step.
 	 */
 	hsize = (size + info->bl_len + align_len) & ~align_len;
+	debug("hsize: %d\n", hsize);
 	fit = spl_get_load_buffer(-hsize, hsize);
 	sectors = get_aligned_image_size(info, size, 0);
 	count = info->read(info, sector, sectors, fit);
-	debug("fit read sector %lx, sectors=%d, dst=%p, count=%lu, size=0x%lx\n",
-	      sector, sectors, fit, count, size);
+	debug("fit read sector %lx, sectors=%d, dst=%lx, count=%lu, size=0x%lx\n",
+	      sector, sectors, (unsigned long)fit, count, size);
 
 	if (count == 0)
 		return -EIO;
@@ -480,14 +493,18 @@ int spl_load_simple_fit(struct spl_image_info *spl_image,
 	for (; ; index++) {
 		uint8_t os_type = IH_OS_INVALID;
 
+		debug("%s: index is now: %d\n", __func__, index);
+
 		node = spl_fit_get_image_node(fit, images, "loadables", index);
 		if (node < 0)
 			break;
 
 		ret = spl_load_fit_image(info, sector, fit, base_offset, node,
 					 &image_info);
-		if (ret < 0)
+		if (ret < 0) {
+			debug("%s: Failed to load image!\n", __func__);
 			continue;
+		}
 
 		if (!spl_fit_image_get_os(fit, node, &os_type))
 			debug("Loadable is %s\n", genimg_get_os_name(os_type));
