@@ -637,14 +637,9 @@ ap_i2c_audio: &i2c8 {
 	status = "okay";
 };
 
-&usbdrd3_0 {
+&dwc3_typec0 {
 	status = "okay";
 	extcon = <&usbc_extcon0>;
-};
-
-&usbdrd_dwc3_0 {
-	status = "okay";
-	dr_mode = "host";
 };
 
 &vopb {

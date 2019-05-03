@@ -348,14 +348,9 @@ ap_i2c_tp: &i2c5 {
 	status = "okay";
 };
 
-&usbdrd3_1 {
+&dwc3_typec1 {
 	status = "okay";
 	extcon = <&usbc_extcon1>;
-};
-
-&usbdrd_dwc3_1 {
-	status = "okay";
-	dr_mode = "host";
 };
 
 &pinctrl {
