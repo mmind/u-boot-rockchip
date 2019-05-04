@@ -97,6 +97,21 @@ int arch_early_init_r(void)
 }
 #endif
 
+int mach_addr_is_dmaable(void __iomem *ptr)
+{
+	uintptr_t addr = (uintptr_t)ptr;
+
+	/*
+	 * The RK3399 cannot cope with high-memory DMA target/sources.
+	 */
+	if (addr < 0xf8000000UL) {
+		return 1;
+	}
+
+	debug("Not DMA-able: 0x%lx\n", addr);
+	return 0;
+}
+
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
 void board_debug_uart_init(void)
 {
