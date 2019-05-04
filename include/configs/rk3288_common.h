@@ -42,6 +42,12 @@
 #define CONFIG_CMD_USB_MASS_STORAGE
 
 /* usb host support */
+/*#define ENV_MEM_LAYOUT_SETTINGS \
+	"scriptaddr=0x00500000\0" \
+	"pxefile_addr_r=0x00600000\0" \
+	"fdt_addr_r=0x5600000\0" \
+	"kernel_addr_r=0x08008000\0" \
+	"ramdisk_addr_r=0x04000000\0"*/
 #define ENV_MEM_LAYOUT_SETTINGS \
 	"scriptaddr=0x00500000\0" \
 	"pxefile_addr_r=0x00600000\0" \
