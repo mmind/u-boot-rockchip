@@ -26,6 +26,12 @@ static int addr_aligned(struct bounce_buffer *state)
 		return 0;
 	}
 
+	/* Check if valid DMA address. */
+	if (!mach_addr_is_dmaable(state->user_buffer)) {
+		debug("Buffer address is not DMA-able\n");
+		return 0;
+	}
+
 	/* Aligned */
 	return 1;
 }
