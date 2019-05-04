@@ -125,6 +125,8 @@ int misc_init_f(void);
 int embedded_dtb_select(void);
 #endif
 
+int mach_addr_is_dmaable(void __iomem *ptr);
+
 /* common/init/board_init.c */
 extern ulong monitor_flash_len;
 
