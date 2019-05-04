@@ -247,3 +247,18 @@ void board_debug_uart_init(void)
 #endif /* CONFIG_DEBUG_UART_BASE && CONFIG_DEBUG_UART_BASE == ... */
 }
 #endif /* CONFIG_DEBUG_UART_BOARD_INIT */
+
+int mach_addr_is_dmaable(void __iomem *ptr)
+{
+	uintptr_t addr = (uintptr_t)ptr;
+
+	/*
+	 * The PX30 cannot cope with high-memory DMA target/sources.
+	 */
+	if (addr < 0xf8000000UL) {
+		return 1;
+	}
+
+	debug("Not DMA-able: 0x%lx\n", addr);
+	return 0;
+}
