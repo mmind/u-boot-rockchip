@@ -97,3 +97,18 @@ int arch_early_init_r(void)
 	return mcu_init();
 }
 #endif
+
+int mach_addr_is_dmaable(void __iomem *ptr)
+{
+	uintptr_t addr = (uintptr_t)ptr;
+
+	/*
+	 * The RK3368 cannot cope with high-memory DMA target/sources.
+	 */
+	if (addr < 0xf0000000UL) {
+		return 1;
+	}
+
+	debug("Not DMA-able: 0x%lx\n", addr);
+	return 0;
+}
