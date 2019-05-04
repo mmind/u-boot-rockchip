@@ -1053,3 +1053,8 @@ void board_init_f_r(void)
 	hang();
 }
 #endif /* CONFIG_X86 */
+
+__weak int mach_addr_is_dmaable(void __iomem *ptr)
+{
+	return 1;
+}
