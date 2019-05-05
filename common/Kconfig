@@ -702,6 +702,21 @@ config BOUNCE_BUFFER
 	  A second possible use of bounce buffers is their ability to
 	  provide aligned buffers for DMA operations.
 
+config SPL_BOUNCE_BUFFER_STATIC
+	bool "Static bounce buffer in SPL"
+	depends on SPL && BOUNCE_BUFFER
+	default n
+	help
+	  This option uses a static allocated memory area as
+	  bounce buffer (i.e. no dynamic allocation).
+
+config SPL_BOUNCE_BUFFER_STATIC_SIZE
+	hex "Size of static bounce buffer in SPL"
+	depends on SPL_BOUNCE_BUFFER_STATIC
+	default 0x2800
+	help
+	  Size of the static allocated bounce buffer.
+
 config BOARD_TYPES
 	bool "Call get_board_type() to get and display the board type"
 	help

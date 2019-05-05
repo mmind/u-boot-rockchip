@@ -10,6 +10,11 @@
 #include <errno.h>
 #include <bouncebuf.h>
 
+#if CONFIG_IS_ENABLED(BOUNCE_BUFFER_STATIC)
+static u8 static_bounce_buffer[CONFIG_VAL(BOUNCE_BUFFER_STATIC_SIZE)];
+static const size_t static_bounce_buffer_size = CONFIG_VAL(BOUNCE_BUFFER_STATIC_SIZE);
+#endif
+
 static int addr_aligned(struct bounce_buffer *state)
 {
 	const ulong align_mask = ARCH_DMA_MINALIGN - 1;
@@ -46,10 +51,19 @@ int bounce_buffer_start(struct bounce_buffer *state, void *data,
 	state->flags = flags;
 
 	if (!addr_aligned(state)) {
+#if CONFIG_IS_ENABLED(BOUNCE_BUFFER_STATIC)
+		if (state->len_aligned > static_bounce_buffer_size) {
+			debug("Static allocated bounce buffer too small.\n");
+			return -ENOMEM;
+		}
+
+		state->bounce_buffer = static_bounce_buffer;
+#else
 		state->bounce_buffer = memalign(ARCH_DMA_MINALIGN,
 						state->len_aligned);
 		if (!state->bounce_buffer)
 			return -ENOMEM;
+#endif
 
 		if (state->flags & GEN_BB_READ)
 			memcpy(state->bounce_buffer, state->user_buffer,
