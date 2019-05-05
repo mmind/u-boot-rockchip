@@ -22,7 +22,7 @@ static int addr_aligned(struct bounce_buffer *state)
 
 	/* Check if length is aligned */
 	if (state->len != state->len_aligned) {
-		debug("Unaligned buffer length %zu\n", state->len);
+		debug("Unaligned buffer length %lu\n", (unsigned long)state->len);
 		return 0;
 	}
 
