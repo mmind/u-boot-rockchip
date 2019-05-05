@@ -23,6 +23,7 @@ static void *alloc_simple(size_t bytes, int align)
 		  gd->malloc_limit);
 	if (new_ptr > gd->malloc_limit) {
 		pr_err("alloc space exhausted\n");
+		for (;;);
 		return NULL;
 	}
 
