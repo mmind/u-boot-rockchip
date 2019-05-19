@@ -9,8 +9,8 @@
 #include <dm/pinctrl.h>
 #include <regmap.h>
 #include <syscon.h>
-#include <asm/arch/grf_rk3399.h>
-#include <asm/arch/periph.h>
+#include <asm/arch-rockchip/grf_rk3399.h>
+#include <asm/arch-rockchip/periph.h>
 
 #include "pinctrl-rockchip.h"
 
