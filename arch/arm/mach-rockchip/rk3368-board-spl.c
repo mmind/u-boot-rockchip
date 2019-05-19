@@ -31,12 +31,6 @@ void board_init_f(ulong dummy)
 		hang();
 	}
 
-	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_UART0);
-	if (ret) {
-		pr_err("%s: failed to set up console UART\n", __func__);
-		hang();
-	}
-
 	preloader_console_init();
 
 	ret = uclass_get_device(UCLASS_RAM, 0, &dev);
