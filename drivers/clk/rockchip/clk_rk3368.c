@@ -2,7 +2,7 @@
 /*
  * (C) Copyright 2017 Rockchip Electronics Co., Ltd
  * Author: Andy Yan <andy.yan@rock-chips.com>
- * (C) Copyright 2017 Theobroma Systems Design und Consulting GmbH
+ * (C) Copyright 2017,2019 Theobroma Systems Design und Consulting GmbH
  */
 
 #include <common.h>
@@ -375,6 +375,46 @@ static inline u32 extract_bits(u32 val, unsigned width, unsigned shift)
 	return (val >> shift) & ((1 << width) - 1);
 }
 
+static inline ulong rk3368_pclk_bus_get_clk(struct rk3368_cru *cru)
+{
+	const u32 cru_clksel8 = readl(&cru->clksel_con[8]);
+
+	const u32 aclk_bus_src = cru_clksel8 & (1 << 7);
+	const u32 aclk_src_freq =
+		aclk_bus_src ? rkclk_pll_get_rate(cru, GPLL) :
+			       rkclk_pll_get_rate(cru, CPLL);
+	const u32 aclk_bus_div = extract_bits(cru_clksel8, 5, 0);
+	const ulong aclk_bus_freq = DIV_TO_RATE(aclk_src_freq, aclk_bus_div);
+
+	const u32 pclk_bus_div = extract_bits(cru_clksel8, 3, 12);
+	const ulong pclk_bus_freq = DIV_TO_RATE(aclk_bus_freq, pclk_bus_div);
+
+	debug("%s: aclk_bus_freq %lu pclk_bus_freq %lu\n",
+	      __func__, aclk_bus_freq, pclk_bus_freq);
+
+	return pclk_bus_freq;
+}
+
+static ulong rk3368_i2c_get_clk(struct rk3368_cru *cru, ulong clk_id)
+{
+	switch (clk_id) {
+	case PCLK_I2C0:
+	case PCLK_I2C1:
+		/*
+		 * The I2C0 and I2C1 clocks on the RK3368 are 'pd_bus
+		 * APB' (pclk_bus), which in turn is derived from
+		 * 'pd_bus AXI' (aclk_bus). These are all controlled
+		 * from CRU_CLKSEL8_CON.
+		 */
+		return rk3368_pclk_bus_get_clk(cru);
+
+	default:
+		debug("%s: clk_id %lu not implemented\n", __func__, clk_id);
+	}
+
+	return 0;
+}
+
 static ulong rk3368_spi_get_clk(struct rk3368_cru *cru, ulong clk_id)
 {
 	const struct spi_clkreg *spiclk = NULL;
@@ -464,6 +504,9 @@ static ulong rk3368_clk_get_rate(struct clk *clk)
 		break;
 	case SCLK_SPI0 ... SCLK_SPI2:
 		rate = rk3368_spi_get_clk(priv->cru, clk->id);
+		break;
+	case PCLK_I2C0:
+		rate = rk3368_i2c_get_clk(priv->cru, clk->id);
 		break;
 #if !IS_ENABLED(CONFIG_SPL_BUILD) || CONFIG_IS_ENABLED(MMC_SUPPORT)
 	case HCLK_SDMMC:
