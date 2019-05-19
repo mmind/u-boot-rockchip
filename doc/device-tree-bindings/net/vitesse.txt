@@ -1,0 +1,21 @@
+Microsemi VSC8531 Gigabit Ethernet PHY
+
+The Microsemi VSC8531 can output a configurable reference clock
+derived from the connected 25, 50 or 125 MHz crystal.  While output of
+a reference clock on CLKOUT can be configured via pin-strapping, the
+frequency output can not be controlled from hardware and needs to
+configured via software.
+
+Optional properties:
+  - vitesse,disable-clkout	disables output of the reference clock
+  - vitesse,enable-clkout = <value>
+				enables output of the reference clock
+				permitted values are 25000000 (25MHz),
+				50000000 (50MHz) and 125000000 (125MHz)
+
+
+Example:
+
+	&gmac {
+	      vitesse,enable-clkout = <125000000>;
+	};

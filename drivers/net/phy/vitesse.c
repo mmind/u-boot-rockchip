@@ -38,6 +38,10 @@
 #define PHY_EXT_PAGE_ACCESS_GENERAL	0x10
 #define PHY_EXT_PAGE_ACCESS_EXTENDED3	0x3
 
+/* Vitesse VSC8531 registers */
+#define MIIM_VSC8531_CLKOUT_DEVAD       16
+#define MIIM_VSC8531_CLKOUT_REG         13
+
 /* Vitesse VSC8574 control register */
 #define MIIM_VSC8574_MAC_SERDES_CON	0x10
 #define MIIM_VSC8574_MAC_SERDES_ANEG	0x80
@@ -266,6 +270,66 @@ static int vsc8514_config(struct phy_device *phydev)
 	return 0;
 }
 
+static int vsc8531_readext(struct phy_device *phydev, int addr, int devad, int reg)
+{
+	int oldpage = phy_read(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS);
+	int val;
+
+	phy_write(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS, devad);
+	val = phy_read(phydev, MDIO_DEVAD_NONE, reg);
+	phy_write(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS, oldpage);
+
+	return val;
+
+}
+
+static int vsc8531_writeext(struct phy_device *phydev, int addr, int devad,
+			    int reg, u16 val)
+{
+	int oldpage = phy_read(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS);
+
+	phy_write(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS, devad);
+	phy_write(phydev, MDIO_DEVAD_NONE, reg, val);
+	phy_write(phydev, MDIO_DEVAD_NONE, PHY_EXT_PAGE_ACCESS, oldpage);
+
+	return 0;
+}
+
+static int vsc8531_config(struct phy_device *phydev)
+{
+	struct udevice *dev = phydev->dev;
+	u32 val;
+
+	/* Configure CLKOUT */
+	if (dev_read_bool(dev, "vitesse,disable-clkout")) {
+		vsc8531_writeext(phydev, phydev->addr,
+				 MIIM_VSC8531_CLKOUT_DEVAD,
+				 MIIM_VSC8531_CLKOUT_REG, 0x0000);
+	} else if (!dev_read_u32(dev, "vitesse,enable-clkout", &val)) {
+		switch (val) {
+		case 25000000:
+			vsc8531_writeext(phydev, phydev->addr,
+					 MIIM_VSC8531_CLKOUT_DEVAD,
+					 MIIM_VSC8531_CLKOUT_REG, 0x8000);
+			break;
+		case 50000000:
+			vsc8531_writeext(phydev, phydev->addr,
+					 MIIM_VSC8531_CLKOUT_DEVAD,
+					 MIIM_VSC8531_CLKOUT_REG, 0x9000);
+			break;
+		case 125000000:
+			vsc8531_writeext(phydev, phydev->addr,
+					 MIIM_VSC8531_CLKOUT_DEVAD,
+					 MIIM_VSC8531_CLKOUT_REG, 0xc000);
+			break;
+		}
+	}
+
+	genphy_config_aneg(phydev);
+
+	return 0;
+}
+
 static int vsc8664_config(struct phy_device *phydev)
 {
 	u32 val;
@@ -353,6 +417,18 @@ static struct phy_driver VSC8514_driver = {
 	.shutdown = &genphy_shutdown,
 };
 
+static struct phy_driver VSC8531_driver = {
+	.name = "Vitesse VSC8531",
+	.uid = 0x70570,
+	.mask = 0xffff0,
+	.features = PHY_GBIT_FEATURES,
+	.config = &vsc8531_config,
+	.startup = &vitesse_startup,
+	.shutdown = &genphy_shutdown,
+	.readext = vsc8531_readext,
+	.writeext = vsc8531_writeext,
+};
+
 static struct phy_driver VSC8584_driver = {
 	.name = "Vitesse VSC8584",
 	.uid = 0x707c0,
@@ -433,6 +509,7 @@ int phy_vitesse_init(void)
 	phy_register(&VSC8211_driver);
 	phy_register(&VSC8221_driver);
 	phy_register(&VSC8574_driver);
+	phy_register(&VSC8531_driver);
 	phy_register(&VSC8584_driver);
 	phy_register(&VSC8514_driver);
 	phy_register(&VSC8662_driver);
