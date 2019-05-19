@@ -59,6 +59,16 @@
 };
 
 &sdmmc {
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	cd-gpios = <&gpio2 RK_PB3 GPIO_ACTIVE_LOW>;
+	disable-wp;
+	max-frequency = <25000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
+	rockchip,default-sample-phase = <90>;
+	vmmc-supply = <&vcc33_io>;
 	status = "okay";
 };
 
@@ -76,6 +86,12 @@
 	pinctrl-0 = <&rgmii_pins>;
 	tx_delay = <0x10>;
 	rx_delay = <0x10>;
+
+	/*
+	 * Lion-v2.x uses a VSC8531 GbE PHY.  To enable the reference
+	 * clock at 125MHz, we need some additional configuration.
+	 */
+	vitesse,enable-clkout = <125000000>;
 };
 
 &i2c0 {
@@ -100,6 +116,7 @@
 		vcc12-supply = <&vcc_sys>;
 		clock-output-names = "xin32k", "rk808-clkout2";
 		#clock-cells = <1>;
+		status = "okay";
 
 		regulators {
 			vdd_cpu: DCDC_REG1 {
