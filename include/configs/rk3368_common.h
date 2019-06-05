@@ -10,9 +10,6 @@
 
 #define CONFIG_SYS_CACHELINE_SIZE	64
 
-#include <asm/arch/hardware.h>
-#include <linux/sizes.h>
-
 #define CONFIG_SYS_SDRAM_BASE		0
 #define SDRAM_MAX_SIZE			0xff000000
 #define CONFIG_BAUDRATE			115200
@@ -36,15 +33,20 @@
 #define ENV_MEM_LAYOUT_SETTINGS \
 	"scriptaddr=0x00500000\0" \
 	"pxefile_addr_r=0x00600000\0" \
-	"fdt_addr_r=0x5600000\0" \
-	"kernel_addr_r=0x280000\0" \
-	"ramdisk_addr_r=0x5bf0000\0"
+	"fdt_addr_r=0x01f00000\0" \
+	"kernel_addr_r=0x02080000\0" \
+	"ramdisk_addr_r=0x04000000\0"
+
+#ifndef ROCKCHIP_DEVICE_SETTINGS
+#define ROCKCHIP_DEVICE_SETTINGS
+#endif
 
 #include <config_distro_bootcmd.h>
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
-	ENV_MEM_LAYOUT_SETTINGS	\
+	ENV_MEM_LAYOUT_SETTINGS \
+	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0" \
+	"partitions=" PARTS_DEFAULT \
+	ROCKCHIP_DEVICE_SETTINGS \
 	BOOTENV
 
 #endif
