@@ -26,6 +26,8 @@ void board_init_f(ulong dummy)
 	struct udevice *dev;
 	int ret;
 
+	printascii("U-Boot SPL board init\n");
+
 	ret = spl_early_init();
 	if (ret) {
 		debug("spl_early_init() failed: %d\n", ret);
