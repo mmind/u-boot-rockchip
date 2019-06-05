@@ -10,6 +10,7 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/cru_rk3368.h>
 #include <asm/arch/grf_rk3368.h>
+#include <asm/arch/hardware.h>
 #include <syscon.h>
 
 DECLARE_GLOBAL_DATA_PTR;

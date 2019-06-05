@@ -18,6 +18,7 @@
 #include <asm/arch/ddr_rk3368.h>
 #include <asm/arch/sdram.h>
 #include <asm/arch/sdram_common.h>
+#include <asm/arch/hardware.h>
 
 struct dram_info {
 	struct ram_info info;
