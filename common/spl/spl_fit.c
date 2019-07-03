@@ -14,6 +14,7 @@
 #ifndef CONFIG_SYS_BOOTM_LEN
 #define CONFIG_SYS_BOOTM_LEN	(64 << 20)
 #endif
+#define debug printf
 
 __weak void board_spl_fit_post_load(ulong load_addr, size_t length)
 {

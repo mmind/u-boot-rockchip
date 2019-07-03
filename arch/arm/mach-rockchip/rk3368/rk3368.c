@@ -109,6 +109,7 @@ int mach_addr_is_dmaable(void __iomem *ptr)
 		return 1;
 	}
 
+printf("Not DMA-able: 0x%lx\n", addr);
 	debug("Not DMA-able: 0x%lx\n", addr);
 	return 0;
 }

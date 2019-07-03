@@ -14,6 +14,7 @@
 #include <asm/macro.h>
 #include <linux/linkage.h>
 
+#define DEBUG
 /*
  * This file handles the target-independent stages of the U-Boot
  * start-up where a C runtime environment is needed. Its entry point

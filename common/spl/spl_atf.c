@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <spl.h>
 
+#define debug printf
 static struct bl2_to_bl31_params_mem bl31_params_mem;
 static struct bl31_params *bl2_to_bl31_params;
 
@@ -171,5 +172,6 @@ void spl_invoke_atf(struct spl_image_info *spl_image)
 	 * We don't provide a BL3-2 entry yet, but this will be possible
 	 * using similar logic.
 	 */
+	debug("%s: atf entry point 0x%lx\n", __func__, spl_image->entry_point);
 	bl31_entry(spl_image->entry_point, bl33_entry, platform_param);
 }
