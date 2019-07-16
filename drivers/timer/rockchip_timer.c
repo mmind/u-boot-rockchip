@@ -16,7 +16,12 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
 struct rockchip_timer_plat {
+#ifdef CONFIG_ROCKCHIP_RK3368
 	struct dtd_rockchip_rk3368_timer dtd;
+#endif
+#ifdef CONFIG_ROCKCHIP_PX30
+	struct dtd_rockchip_px30_timer dtd;
+#endif
 };
 #endif
 
@@ -151,6 +156,7 @@ static const struct timer_ops rockchip_timer_ops = {
 };
 
 static const struct udevice_id rockchip_timer_ids[] = {
+	{ .compatible = "rockchip,px30-timer" },
 	{ .compatible = "rockchip,rk3188-timer" },
 	{ .compatible = "rockchip,rk3288-timer" },
 	{ .compatible = "rockchip,rk3368-timer" },
