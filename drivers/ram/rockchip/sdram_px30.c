@@ -11,11 +11,6 @@
 #include <asm/arch-rockchip/grf_px30.h>
 #include <asm/arch-rockchip/sdram_common.h>
 
-struct dram_info {
-	struct ram_info info;
-	struct px30_pmugrf *pmugrf;
-};
-
 static int px30_dmc_probe(struct udevice *dev)
 {
 	struct dram_info *priv = dev_get_priv(dev);
