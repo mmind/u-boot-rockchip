@@ -13,35 +13,12 @@
 #include <asm/arch-rockchip/cru_px30.h>
 #include <asm/arch-rockchip/grf_px30.h>
 #include <asm/arch-rockchip/hardware.h>
-#include <asm/arch-rockchip/sdram_common.h>
+#include <asm/arch-rockchip/sdram.h>
 #include <asm/arch-rockchip/sdram_px30.h>
 
-#define TIMER_CUR_VALUE0	0x08
-#define TIMER_CUR_VALUE1	0x0c
+#ifdef CONFIG_TPL_BUILD
 
-static u64 rockchip_get_ticks(void)
-{
-	u64 timebase_h, timebase_l;
-
-	timebase_l = readl(CONFIG_ROCKCHIP_STIMER_BASE + TIMER_CUR_VALUE0);
-	timebase_h = readl(CONFIG_ROCKCHIP_STIMER_BASE + TIMER_CUR_VALUE1);
-
-	return timebase_h << 32 | timebase_l;
-}
-
-void rockchip_udelay(unsigned int usec)
-{
-	u64 tmp;
-
-	/* get timestamp */
-	tmp = rockchip_get_ticks() + usec_to_tick(usec);
-
-	/* loop till event */
-	while (rockchip_get_ticks() < tmp + 1)
-		;
-}
-
-u8 ddr_cfg_2_rbc[] = {
+static u8 ddr_cfg_2_rbc[] = {
 	/*
 	 * [6:4] max row: 13+n
 	 * [3]  bank(0:4bank,1:8bank)
@@ -54,9 +31,9 @@ u8 ddr_cfg_2_rbc[] = {
 	((2 << 4) | (1 << 3) | 4), /* 4 */
 	((5 << 4) | (0 << 3) | 2), /* 5 */
 	((4 << 4) | (1 << 3) | 2), /* 6 */
+	/*((0<<3)|3),*/	 /* 12 for ddr4 */
+	/*((1<<3)|1),*/  /* 13 B,C exchange for rkvdec */
 };
-
-#ifdef CONFIG_TPL_BUILD
 
 /*
  * for ddr4 if ddrconfig=7, upctl should set 7 and noc should
@@ -121,12 +98,11 @@ static u32 addrmap[][8] = {
 		0x06060606, 0x00000606, 0x3f3f}, /* 13 */
 };
 
-DECLARE_GLOBAL_DATA_PTR;
 struct dram_info {
 	struct ddr_pctl_regs *pctl;
 	struct ddr_phy_regs *phy;
 	struct px30_cru *cru;
-	struct px30_msch_regs *msch;
+	struct msch_regs *msch;
 	struct px30_ddr_grf_regs *ddr_grf;
 	struct px30_grf *grf;
 	struct ram_info info;
@@ -151,15 +127,13 @@ struct ddr_phy_skew skew = {
 #include	"sdram-px30-ddr_skew.inc"
 };
 
-#define PATTERN				(0x5aa5f00f)
-
 /*
  * cs: 0:cs0
  *	   1:cs1
  *     else cs0+cs1
  * note: it didn't consider about row_3_4
  */
-u64 sdram_get_cs_cap(struct px30_sdram_channel *cap_info, u32 cs, u32 dram_type)
+u64 sdram_get_cs_cap(struct sdram_cap_info *cap_info, u32 cs, u32 dram_type)
 {
 	u32 bg;
 	u64 cap[2];
@@ -200,10 +174,272 @@ void sdram_copy_to_reg(u32 *dest, const u32 *src, u32 n)
 	}
 }
 
+void sdram_org_config(struct sdram_cap_info *cap_info,
+		      struct sdram_base_params *base,
+		      u32 *p_os_reg2, u32 *p_os_reg3, u32 channel)
+{
+	*p_os_reg2 |= SYS_REG_ENC_DDRTYPE(base->dramtype);
+	*p_os_reg2 |= SYS_REG_ENC_NUM_CH(base->num_channels);
+
+	*p_os_reg2 |= SYS_REG_ENC_ROW_3_4(cap_info->row_3_4, channel);
+	*p_os_reg2 |= SYS_REG_ENC_CHINFO(channel);
+	*p_os_reg2 |= SYS_REG_ENC_RANK(cap_info->rank, channel);
+	*p_os_reg2 |= SYS_REG_ENC_COL(cap_info->col, channel);
+	*p_os_reg2 |= SYS_REG_ENC_BK(cap_info->bk, channel);
+	*p_os_reg2 |= SYS_REG_ENC_BW(cap_info->bw, channel);
+	*p_os_reg2 |= SYS_REG_ENC_DBW(cap_info->dbw, channel);
+	SYS_REG_ENC_CS0_ROW(cap_info->cs0_row, *p_os_reg2, *p_os_reg3, channel);
+	if (cap_info->cs1_row)
+		SYS_REG_ENC_CS1_ROW(cap_info->cs1_row, *p_os_reg2,
+				    *p_os_reg3, channel);
+	*p_os_reg3 |= SYS_REG_ENC_CS1_COL(cap_info->col, channel);
+	*p_os_reg3 |= SYS_REG_ENC_VERSION(DDR_SYS_REG_VERSION);
+}
+
+int sdram_detect_bw(struct sdram_cap_info *cap_info)
+{
+	return 0;
+}
+
+int sdram_detect_cs(struct sdram_cap_info *cap_info)
+{
+	return 0;
+}
+
+int sdram_detect_col(struct sdram_cap_info *cap_info,
+		     u32 coltmp)
+{
+	void __iomem *test_addr;
+	u32 col;
+	u32 bw = cap_info->bw;
+
+	for (col = coltmp; col >= 9; col -= 1) {
+		writel(0, CONFIG_SYS_SDRAM_BASE);
+		test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+				(1ul << (col + bw - 1ul)));
+		writel(PATTERN, test_addr);
+		if ((readl(test_addr) == PATTERN) &&
+		    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
+			break;
+	}
+	if (col == 8) {
+		printascii("col error\n");
+		return -1;
+	}
+
+	cap_info->col = col;
+
+	return 0;
+}
+
+int sdram_detect_bank(struct sdram_cap_info *cap_info,
+		      u32 coltmp, u32 bktmp)
+{
+	void __iomem *test_addr;
+	u32 bk;
+	u32 bw = cap_info->bw;
+
+	test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+			(1ul << (coltmp + bktmp + bw - 1ul)));
+	writel(0, CONFIG_SYS_SDRAM_BASE);
+	writel(PATTERN, test_addr);
+	if ((readl(test_addr) == PATTERN) &&
+	    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
+		bk = 3;
+	else
+		bk = 2;
+
+	cap_info->bk = bk;
+
+	return 0;
+}
+
+/* detect bg for ddr4 */
+int sdram_detect_bg(struct sdram_cap_info *cap_info,
+		    u32 coltmp)
+{
+	void __iomem *test_addr;
+	u32 dbw;
+	u32 bw = cap_info->bw;
+
+	test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+			(1ul << (coltmp + bw + 1ul)));
+	writel(0, CONFIG_SYS_SDRAM_BASE);
+	writel(PATTERN, test_addr);
+	if ((readl(test_addr) == PATTERN) &&
+	    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
+		dbw = 0;
+	else
+		dbw = 1;
+
+	cap_info->dbw = dbw;
+
+	return 0;
+}
+
+/* detect dbw for ddr3,lpddr2,lpddr3,lpddr4 */
+int sdram_detect_dbw(struct sdram_cap_info *cap_info, u32 dram_type)
+{
+	u32 row, col, bk, bw, cs_cap, cs;
+	u32 die_bw_0 = 0, die_bw_1 = 0;
+
+	if (dram_type == DDR3 || dram_type == LPDDR4) {
+		cap_info->dbw = 1;
+	} else if (dram_type == LPDDR3 || dram_type == LPDDR2) {
+		row = cap_info->cs0_row;
+		col = cap_info->col;
+		bk = cap_info->bk;
+		cs = cap_info->rank;
+		bw = cap_info->bw;
+		cs_cap = (1 << (row + col + bk + bw - 20));
+		if (bw == 2) {
+			if (cs_cap <= 0x2000000) /* 256Mb */
+				die_bw_0 = (col < 9) ? 2 : 1;
+			else if (cs_cap <= 0x10000000) /* 2Gb */
+				die_bw_0 = (col < 10) ? 2 : 1;
+			else if (cs_cap <= 0x40000000) /* 8Gb */
+				die_bw_0 = (col < 11) ? 2 : 1;
+			else
+				die_bw_0 = (col < 12) ? 2 : 1;
+			if (cs > 1) {
+				row = cap_info->cs1_row;
+				cs_cap = (1 << (row + col + bk + bw - 20));
+				if (cs_cap <= 0x2000000) /* 256Mb */
+					die_bw_0 = (col < 9) ? 2 : 1;
+				else if (cs_cap <= 0x10000000) /* 2Gb */
+					die_bw_0 = (col < 10) ? 2 : 1;
+				else if (cs_cap <= 0x40000000) /* 8Gb */
+					die_bw_0 = (col < 11) ? 2 : 1;
+				else
+					die_bw_0 = (col < 12) ? 2 : 1;
+			}
+		} else {
+			die_bw_1 = 1;
+			die_bw_0 = 1;
+		}
+		cap_info->dbw = (die_bw_0 > die_bw_1) ? die_bw_0 : die_bw_1;
+	}
+
+	return 0;
+}
+
+int sdram_detect_row(struct sdram_cap_info *cap_info,
+		     u32 coltmp, u32 bktmp, u32 rowtmp)
+{
+	u32 row;
+	u32 bw = cap_info->bw;
+	void __iomem *test_addr;
+
+	for (row = rowtmp; row > 12; row--) {
+		writel(0, CONFIG_SYS_SDRAM_BASE);
+		test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+				(1ul << (row + bktmp + coltmp + bw - 1ul)));
+		writel(PATTERN, test_addr);
+		if ((readl(test_addr) == PATTERN) &&
+		    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
+			break;
+	}
+	if (row == 12) {
+		printascii("row error");
+		return -1;
+	}
+
+	cap_info->cs0_row = row;
+
+	return 0;
+}
+
+int sdram_detect_row_3_4(struct sdram_cap_info *cap_info,
+			 u32 coltmp, u32 bktmp)
+{
+	u32 row_3_4;
+	u32 bw = cap_info->bw;
+	u32 row = cap_info->cs0_row;
+	void __iomem *test_addr, *test_addr1;
+
+	test_addr = CONFIG_SYS_SDRAM_BASE;
+	test_addr1 = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+			(0x3ul << (row + bktmp + coltmp + bw - 1ul - 1ul)));
+
+	writel(0, test_addr);
+	writel(PATTERN, test_addr1);
+	if ((readl(test_addr) == 0) && (readl(test_addr1) == PATTERN))
+		row_3_4 = 0;
+	else
+		row_3_4 = 1;
+
+	cap_info->row_3_4 = row_3_4;
+
+	return 0;
+}
+
+int sdram_detect_high_row(struct sdram_cap_info *cap_info)
+{
+	cap_info->cs0_high16bit_row = cap_info->cs0_row;
+	cap_info->cs1_high16bit_row = cap_info->cs1_row;
+
+	return 0;
+}
+
+int sdram_detect_cs1_row(struct sdram_cap_info *cap_info, u32 dram_type)
+{
+	void __iomem *test_addr;
+	u32 row = 0, bktmp, coltmp, bw;
+	ulong cs0_cap;
+	u32 byte_mask;
+
+	if (cap_info->rank == 2) {
+		cs0_cap = sdram_get_cs_cap(cap_info, 0, dram_type);
+
+		if (dram_type == DDR4) {
+			if (cap_info->dbw == 0)
+				bktmp = cap_info->bk + 2;
+			else
+				bktmp = cap_info->bk + 1;
+		} else {
+			bktmp = cap_info->bk;
+		}
+		bw = cap_info->bw;
+		coltmp = cap_info->col;
+
+		/*
+		 * because px30 support axi split,min bandwidth
+		 * is 8bit. if cs0 is 32bit, cs1 may 32bit or 16bit
+		 * so we check low 16bit data when detect cs1 row.
+		 * if cs0 is 16bit/8bit, we check low 8bit data.
+		 */
+		if (bw == 2)
+			byte_mask = 0xFFFF;
+		else
+			byte_mask = 0xFF;
+
+		/* detect cs1 row */
+		for (row = cap_info->cs0_row; row > 12; row--) {
+			test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
+				    cs0_cap +
+				    (1ul << (row + bktmp + coltmp + bw - 1ul)));
+			writel(0, CONFIG_SYS_SDRAM_BASE + cs0_cap);
+			writel(PATTERN, test_addr);
+
+			if (((readl(test_addr) & byte_mask) ==
+			     (PATTERN & byte_mask)) &&
+			    ((readl(CONFIG_SYS_SDRAM_BASE + cs0_cap) &
+			      byte_mask) == 0)) {
+				break;
+			}
+		}
+	}
+
+	cap_info->cs1_row = row;
+
+	return 0;
+}
+
 static void sdram_phy_dll_bypass_set(void __iomem *phy_base, u32 freq)
 {
 	u32 tmp;
 	u32 i, j;
+	u32 dqs_dll_freq;
 
 	setbits_le32(PHY_REG(phy_base, 0x13), 1 << 4);
 	clrbits_le32(PHY_REG(phy_base, 0x14), 1 << 3);
@@ -213,13 +449,19 @@ static void sdram_phy_dll_bypass_set(void __iomem *phy_base, u32 freq)
 		clrbits_le32(PHY_REG(phy_base, j + 0x1), 1 << 3);
 	}
 
-	if (freq <= (400000000))
+	if (freq <= 400)
 		/* DLL bypass */
 		setbits_le32(PHY_REG(phy_base, 0xa4), 0x1f);
 	else
 		clrbits_le32(PHY_REG(phy_base, 0xa4), 0x1f);
 
-	if (freq <= (801000000))
+	#ifdef CONFIG_ROCKCHIP_RK3328
+	dqs_dll_freq = 680;
+	#else
+	dqs_dll_freq = 801;
+	#endif
+
+	if (freq <= dqs_dll_freq)
 		tmp = 2;
 	else
 		tmp = 1;
@@ -324,7 +566,9 @@ static int phy_data_training(void __iomem *phy_base, u32 cs, u32 dramtype)
 	ret = readl(PHY_REG(phy_base, 0xff));
 	/* disable gate training */
 	clrsetbits_le32(PHY_REG(phy_base, 2), 0x33, (0x20 >> cs) | 0);
+	#ifndef CONFIG_ROCKCHIP_RK3328
 	clrbits_le32(PHY_REG(phy_base, 2), 0x30);
+	#endif
 
 	if (dramtype == DDR4) {
 		clrsetbits_le32(PHY_REG(phy_base, 0x29), 0x3, 0x2);
@@ -345,13 +589,12 @@ static int phy_data_training(void __iomem *phy_base, u32 cs, u32 dramtype)
 		writel(odt_val, PHY_REG(phy_base, j + 0x1));
 		writel(odt_val, PHY_REG(phy_base, j + 0xe));
 	}
-
 	return ret;
 }
 
 static void phy_cfg(void __iomem *phy_base,
 		    struct ddr_phy_regs *phy_regs, struct ddr_phy_skew *skew,
-		    struct px30_base_params *base, u32 bw)
+		    struct sdram_base_params *base, u32 bw)
 {
 	u32 i;
 
@@ -384,289 +627,6 @@ static void phy_cfg(void __iomem *phy_base,
 			  &skew->cs0_dm0_skew[0], 44 * 4);
 	sdram_copy_to_reg(PHY_REG(phy_base, 0xc0),
 			  &skew->cs1_dm0_skew[0], 44 * 4);
-}
-
-void sdram_org_config(struct px30_sdram_channel *info,
-		      struct px30_base_params *base,
-		      u32 *p_os_reg2, u32 *p_os_reg3, u32 channel)
-{
-	*p_os_reg2 |= base->dramtype << SYS_REG_DDRTYPE_SHIFT;
-	*p_os_reg2 |= (base->num_channels - 1) << SYS_REG_NUM_CH_SHIFT;
-	*p_os_reg2 |= info->row_3_4 << SYS_REG_ROW_3_4_SHIFT(channel);
-	*p_os_reg2 |= 1 << SYS_REG_CHINFO_SHIFT(channel);
-	*p_os_reg2 |= (info->rank - 1) << SYS_REG_RANK_SHIFT(channel);
-	*p_os_reg2 |= (info->col - 9) << SYS_REG_COL_SHIFT(channel);
-	*p_os_reg2 |= info->bk == 3 ? 0 : 1 << SYS_REG_BK_SHIFT(channel);
-	*p_os_reg2 |= (info->cs0_row - 13) << SYS_REG_CS0_ROW_SHIFT(channel);
-	if (info->cs1_row >= 13)
-		*p_os_reg2 |= (info->cs1_row - 13) << SYS_REG_CS1_ROW_SHIFT(channel);
-	*p_os_reg2 |= (2 >> info->bw) << SYS_REG_BW_SHIFT(channel);
-	*p_os_reg2 |= (2 >> info->dbw) << SYS_REG_DBW_SHIFT(channel);
-}
-
-void sdram_msch_config(struct px30_msch_regs *msch,
-		       struct px30_msch_timings *noc_timings,
-		       struct px30_sdram_channel *cap_info,
-		       struct px30_base_params *base)
-{
-	u64 cs_cap[2];
-
-	cs_cap[0] = sdram_get_cs_cap(cap_info, 0, base->dramtype);
-	cs_cap[1] = sdram_get_cs_cap(cap_info, 1, base->dramtype);
-	writel(((((cs_cap[1] >> 20) / 64) & 0xff) << 8) |
-			(((cs_cap[0] >> 20) / 64) & 0xff),
-			&msch->devicesize);
-
-	writel(noc_timings->ddrtiminga0, &msch->ddrtiminga0);
-	writel(noc_timings->ddrtimingb0, &msch->ddrtimingb0);
-	writel(noc_timings->ddrtimingc0, &msch->ddrtimingc0);
-	writel(noc_timings->devtodev0, &msch->devtodev0);
-	writel(noc_timings->ddrmode, &msch->ddrmode);
-	writel(noc_timings->ddr4timing, &msch->ddr4timing);
-	writel(noc_timings->agingx0, &msch->agingx0);
-	writel(noc_timings->agingx0, &msch->aging0);
-	writel(noc_timings->agingx0, &msch->aging1);
-	writel(noc_timings->agingx0, &msch->aging2);
-	writel(noc_timings->agingx0, &msch->aging3);
-}
-
-int sdram_detect_bw(struct px30_sdram_channel *cap_info)
-{
-	return 0;
-}
-
-int sdram_detect_cs(struct px30_sdram_channel *cap_info)
-{
-	return 0;
-}
-
-int sdram_detect_col(struct px30_sdram_channel *cap_info,
-		     u32 coltmp)
-{
-	void __iomem *test_addr;
-	u32 col;
-	u32 bw = cap_info->bw;
-
-	for (col = coltmp; col >= 9; col -= 1) {
-		writel(0, CONFIG_SYS_SDRAM_BASE);
-		test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-				(1ul << (col + bw - 1ul)));
-		writel(PATTERN, test_addr);
-		if ((readl(test_addr) == PATTERN) &&
-		    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
-			break;
-	}
-	if (col == 8) {
-		printascii("col error\n");
-		return -1;
-	}
-
-	cap_info->col = col;
-
-	return 0;
-}
-
-int sdram_detect_bank(struct px30_sdram_channel *cap_info,
-		      u32 coltmp, u32 bktmp)
-{
-	void __iomem *test_addr;
-	u32 bk;
-	u32 bw = cap_info->bw;
-
-	test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-			(1ul << (coltmp + bktmp + bw - 1ul)));
-	writel(0, CONFIG_SYS_SDRAM_BASE);
-	writel(PATTERN, test_addr);
-	if ((readl(test_addr) == PATTERN) &&
-	    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
-		bk = 3;
-	else
-		bk = 2;
-
-	cap_info->bk = bk;
-
-	return 0;
-}
-
-/* detect bg for ddr4 */
-int sdram_detect_bg(struct px30_sdram_channel *cap_info,
-		    u32 coltmp)
-{
-	void __iomem *test_addr;
-	u32 dbw;
-	u32 bw = cap_info->bw;
-
-	test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-			(1ul << (coltmp + bw + 1ul)));
-	writel(0, CONFIG_SYS_SDRAM_BASE);
-	writel(PATTERN, test_addr);
-	if ((readl(test_addr) == PATTERN) &&
-	    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
-		dbw = 0;
-	else
-		dbw = 1;
-
-	cap_info->dbw = dbw;
-
-	return 0;
-}
-
-/* detect dbw for ddr3,lpddr2,lpddr3,lpddr4 */
-int sdram_detect_dbw(struct px30_sdram_channel *cap_info, u32 dram_type)
-{
-	u32 row, col, bk, bw, cs_cap, cs;
-	u32 die_bw_0 = 0, die_bw_1 = 0;
-
-	if (dram_type == DDR3 || dram_type == LPDDR4) {
-		cap_info->dbw = 1;
-	} else if (dram_type == LPDDR3 || dram_type == LPDDR2) {
-		row = cap_info->cs0_row;
-		col = cap_info->col;
-		bk = cap_info->bk;
-		cs = cap_info->rank;
-		bw = cap_info->bw;
-		cs_cap = (1 << (row + col + bk + bw - 20));
-		if (bw == 2) {
-			if (cs_cap <= 0x2000000) /* 256Mb */
-				die_bw_0 = (col < 9) ? 2 : 1;
-			else if (cs_cap <= 0x10000000) /* 2Gb */
-				die_bw_0 = (col < 10) ? 2 : 1;
-			else if (cs_cap <= 0x40000000) /* 8Gb */
-				die_bw_0 = (col < 11) ? 2 : 1;
-			else
-				die_bw_0 = (col < 12) ? 2 : 1;
-			if (cs > 1) {
-				row = cap_info->cs1_row;
-				cs_cap = (1 << (row + col + bk + bw - 20));
-				if (cs_cap <= 0x2000000) /* 256Mb */
-					die_bw_0 = (col < 9) ? 2 : 1;
-				else if (cs_cap <= 0x10000000) /* 2Gb */
-					die_bw_0 = (col < 10) ? 2 : 1;
-				else if (cs_cap <= 0x40000000) /* 8Gb */
-					die_bw_0 = (col < 11) ? 2 : 1;
-				else
-					die_bw_0 = (col < 12) ? 2 : 1;
-			}
-		} else {
-			die_bw_1 = 1;
-			die_bw_0 = 1;
-		}
-		cap_info->dbw = (die_bw_0 > die_bw_1) ? die_bw_0 : die_bw_1;
-	}
-
-	return 0;
-}
-
-int sdram_detect_row(struct px30_sdram_channel *cap_info,
-		     u32 coltmp, u32 bktmp, u32 rowtmp)
-{
-	u32 row;
-	u32 bw = cap_info->bw;
-	void __iomem *test_addr;
-
-	for (row = rowtmp; row > 12; row--) {
-		writel(0, CONFIG_SYS_SDRAM_BASE);
-		test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-				(1ul << (row + bktmp + coltmp + bw - 1ul)));
-		writel(PATTERN, test_addr);
-		if ((readl(test_addr) == PATTERN) &&
-		    (readl(CONFIG_SYS_SDRAM_BASE) == 0))
-			break;
-	}
-	if (row == 12) {
-		printascii("row error");
-		return -1;
-	}
-
-	cap_info->cs0_row = row;
-
-	return 0;
-}
-
-int sdram_detect_row_3_4(struct px30_sdram_channel *cap_info,
-			 u32 coltmp, u32 bktmp)
-{
-	u32 row_3_4;
-	u32 bw = cap_info->bw;
-	u32 row = cap_info->cs0_row;
-	void __iomem *test_addr, *test_addr1;
-
-	test_addr = CONFIG_SYS_SDRAM_BASE;
-	test_addr1 = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-			(0x3ul << (row + bktmp + coltmp + bw - 1ul - 1ul)));
-
-	writel(0, test_addr);
-	writel(PATTERN, test_addr1);
-	if ((readl(test_addr) == 0) && (readl(test_addr1) == PATTERN))
-		row_3_4 = 0;
-	else
-		row_3_4 = 1;
-
-	cap_info->row_3_4 = row_3_4;
-
-	return 0;
-}
-
-int sdram_detect_high_row(struct px30_sdram_channel *cap_info)
-{
-	cap_info->cs0_high16bit_row = cap_info->cs0_row;
-	cap_info->cs1_high16bit_row = cap_info->cs1_row;
-
-	return 0;
-}
-
-int sdram_detect_cs1_row(struct px30_sdram_channel *cap_info, u32 dram_type)
-{
-	void __iomem *test_addr;
-	u32 row = 0, bktmp, coltmp, bw;
-	ulong cs0_cap;
-	u32 byte_mask;
-
-	if (cap_info->rank == 2) {
-		cs0_cap = sdram_get_cs_cap(cap_info, 0, dram_type);
-
-		if (dram_type == DDR4) {
-			if (cap_info->dbw == 0)
-				bktmp = cap_info->bk + 2;
-			else
-				bktmp = cap_info->bk + 1;
-		} else {
-			bktmp = cap_info->bk;
-		}
-		bw = cap_info->bw;
-		coltmp = cap_info->col;
-
-		/*
-		 * because px30 support axi split,min bandwidth
-		 * is 8bit. if cs0 is 32bit, cs1 may 32bit or 16bit
-		 * so we check low 16bit data when detect cs1 row.
-		 * if cs0 is 16bit/8bit, we check low 8bit data.
-		 */
-		if (bw == 2)
-			byte_mask = 0xFFFF;
-		else
-			byte_mask = 0xFF;
-
-		/* detect cs1 row */
-		for (row = cap_info->cs0_row; row > 12; row--) {
-			test_addr = (void __iomem *)(CONFIG_SYS_SDRAM_BASE +
-				    cs0_cap +
-				    (1ul << (row + bktmp + coltmp + bw - 1ul)));
-			writel(0, CONFIG_SYS_SDRAM_BASE + cs0_cap);
-			writel(PATTERN, test_addr);
-
-			if (((readl(test_addr) & byte_mask) ==
-			     (PATTERN & byte_mask)) &&
-			    ((readl(CONFIG_SYS_SDRAM_BASE + cs0_cap) &
-			      byte_mask) == 0)) {
-				break;
-			}
-		}
-	}
-
-	cap_info->cs1_row = row;
-
-	return 0;
 }
 
 static void rkclk_ddr_reset(struct dram_info *dram,
@@ -715,7 +675,7 @@ static void rkclk_set_dpll(struct dram_info *dram, unsigned int hz)
 	       &dram->cru->pll[1].con1);
 
 	while (delay > 0) {
-		rockchip_udelay(1);
+		udelay(1);
 		if (LOCK(readl(&dram->cru->pll[1].con1)))
 			break;
 		delay--;
@@ -738,7 +698,7 @@ static void rkclk_configure_ddr(struct dram_info *dram,
  */
 static unsigned int calculate_ddrconfig(struct px30_sdram_params *sdram_params)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 	u32 bw, die_bw, col, bank;
 	u32 i, tmp;
 	u32 ddrconf = -1;
@@ -896,8 +856,8 @@ static int pctl_write_vrefdq(void __iomem *pctl_base, u32 rank, u32 vrefrate,
 }
 
 static u32 pctl_remodify_sdram_params(struct ddr_pctl_regs *pctl_regs,
-				      struct px30_sdram_channel *cap_info,
-			       u32 dram_type)
+				      struct sdram_cap_info *cap_info,
+				      u32 dram_type)
 {
 	u32 tmp = 0, tmp_adr = 0, i;
 
@@ -971,7 +931,7 @@ static int pctl_cfg(void __iomem *pctl_base, struct ddr_pctl_regs *pctl_regs,
 static void set_ctl_address_map(struct dram_info *dram,
 				struct px30_sdram_params *sdram_params)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 	void __iomem *pctl_base = dram->pctl;
 	u32 cs_pst, bg, max_row, ddrconf;
 	u32 i;
@@ -1107,10 +1067,41 @@ static void set_ddrconfig(struct dram_info *dram, u32 ddrconfig)
 	rk_clrsetreg(&dram->grf->soc_noc_con[1], 0x3 << 14, 0 << 14);
 }
 
+static void sdram_msch_config(struct msch_regs *msch,
+			      struct sdram_msch_timings *noc_timings,
+			      struct sdram_cap_info *cap_info,
+			      struct sdram_base_params *base)
+{
+	u64 cs_cap[2];
+
+	cs_cap[0] = sdram_get_cs_cap(cap_info, 0, base->dramtype);
+	cs_cap[1] = sdram_get_cs_cap(cap_info, 1, base->dramtype);
+	writel(((((cs_cap[1] >> 20) / 64) & 0xff) << 8) |
+			(((cs_cap[0] >> 20) / 64) & 0xff),
+			&msch->devicesize);
+
+	writel(noc_timings->ddrtiminga0.d32,
+	       &msch->ddrtiminga0);
+	writel(noc_timings->ddrtimingb0.d32,
+	       &msch->ddrtimingb0);
+	writel(noc_timings->ddrtimingc0.d32,
+	       &msch->ddrtimingc0);
+	writel(noc_timings->devtodev0.d32,
+	       &msch->devtodev0);
+	writel(noc_timings->ddrmode.d32, &msch->ddrmode);
+	writel(noc_timings->ddr4timing.d32,
+	       &msch->ddr4timing);
+	writel(noc_timings->agingx0, &msch->agingx0);
+	writel(noc_timings->agingx0, &msch->aging0);
+	writel(noc_timings->agingx0, &msch->aging1);
+	writel(noc_timings->agingx0, &msch->aging2);
+	writel(noc_timings->agingx0, &msch->aging3);
+}
+
 static void dram_all_config(struct dram_info *dram,
 			    struct px30_sdram_params *sdram_params)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 	u32 sys_reg2 = 0;
 	u32 sys_reg3 = 0;
 
@@ -1178,11 +1169,11 @@ static void enable_low_power(struct dram_info *dram,
 static int sdram_init_(struct dram_info *dram,
 		       struct px30_sdram_params *sdram_params, u32 pre_init)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 	void __iomem *pctl_base = dram->pctl;
 
 	rkclk_ddr_reset(dram, 1, 1, 1, 1);
-	rockchip_udelay(10);
+	udelay(10);
 	/*
 	 * dereset ddr phy psrstn to config pll,
 	 * if using phy pll psrstn must be dereset
@@ -1193,9 +1184,8 @@ static int sdram_init_(struct dram_info *dram,
 
 	/* release phy srst to provide clk to ctrl */
 	rkclk_ddr_reset(dram, 1, 1, 0, 0);
-	rockchip_udelay(10);
+	udelay(10);
 	phy_soft_reset(dram->phy);
-
 	/* release ctrl presetn, and config ctl registers */
 	rkclk_ddr_reset(dram, 1, 0, 0, 0);
 	pctl_cfg(dram->pctl, &sdram_params->pctl_regs, SR_IDLE, PD_IDLE);
@@ -1234,7 +1224,6 @@ redo_cs0_training:
 		if ((read_mr(dram, 1, 8) & 0x3) != 0x0)
 			return -1;
 	}
-
 	/* for px30: when 2cs, both 2 cs should be training */
 	if (pre_init != 0 && cap_info->rank == 2) {
 redo_cs1_training:
@@ -1262,7 +1251,7 @@ static int dram_detect_cap(struct dram_info *dram,
 			   struct px30_sdram_params *sdram_params,
 			   unsigned char channel)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 
 	/*
 	 * for ddr3: ddrconf = 3
@@ -1341,7 +1330,7 @@ cap_err:
 static int sdram_init_detect(struct dram_info *dram,
 			     struct px30_sdram_params *sdram_params)
 {
-	struct px30_sdram_channel *cap_info = &sdram_params->ch;
+	struct sdram_cap_info *cap_info = &sdram_params->ch.cap_info;
 	u32 ret;
 	u32 sys_reg = 0;
 	u32 sys_reg3 = 0;
@@ -1365,6 +1354,8 @@ static int sdram_init_detect(struct dram_info *dram,
 	if (cap_info->cs1_row) {
 		sys_reg = readl(&dram->pmugrf->os_reg[2]);
 		sys_reg3 = readl(&dram->pmugrf->os_reg[3]);
+		SYS_REG_ENC_CS1_ROW(cap_info->cs1_row,
+				    sys_reg, sys_reg3, 0);
 		writel(sys_reg, &dram->pmugrf->os_reg[2]);
 		writel(sys_reg3, &dram->pmugrf->os_reg[3]);
 	}
@@ -1375,7 +1366,8 @@ out:
 	return ret;
 }
 
-struct px30_sdram_params *get_default_sdram_config(void)
+struct px30_sdram_params
+		*get_default_sdram_config(void)
 {
 	sdram_configs[0].skew = &skew;
 
@@ -1402,4 +1394,5 @@ int sdram_init(void)
 
 	return ret;
 }
+
 #endif /* CONFIG_TPL_BUILD */
