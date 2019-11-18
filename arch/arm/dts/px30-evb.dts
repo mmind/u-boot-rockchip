@@ -15,7 +15,7 @@
 	compatible = "rockchip,px30-evb", "rockchip,px30";
 
 	chosen {
-		stdout-path = "serial2:115200n8";
+		stdout-path = "serial5:115200n8";
 	};
 
 	adc-keys {
@@ -475,6 +475,7 @@
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc_sd>;
 	vqmmc-supply = <&vccio_sd>;
+	status = "okay";
 };
 
 &sdio {
@@ -494,7 +495,7 @@
 };
 
 &uart2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &uart5 {
