@@ -14,4 +14,12 @@
 /* PHY needs longer aneg time at 1G */
 #define PHY_ANEG_TIMEOUT		8000
 
+
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
+	ENV_MEM_LAYOUT_SETTINGS	\
+	"ethaddr=ca:ff:ee:00:00:07\0" \
+	BOOTENV
+
 #endif
