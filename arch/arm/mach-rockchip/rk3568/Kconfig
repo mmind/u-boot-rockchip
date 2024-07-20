@@ -27,6 +27,11 @@ config TARGET_POWKIDDY_X55_RK3566
 	help
 	  Powkiddy X55 handheld gaming console with an RK3566 SoC.
 
+config TARGET_QNAP_TS433_RK3568
+	bool "QNAP-TS433"
+	help
+	  Qnap TS433 4 bay NAS with a RK3568 SoC.
+
 config TARGET_QUARTZ64_RK3566
 	bool "Pine64 Quartz64"
 	help
@@ -54,5 +59,6 @@ source "board/anbernic/rgxx3_rk3566/Kconfig"
 source "board/hardkernel/odroid_m1/Kconfig"
 source "board/pine64/quartz64_rk3566/Kconfig"
 source "board/powkiddy/x55/Kconfig"
+source "board/qnap/ts433/Kconfig"
 
 endif
