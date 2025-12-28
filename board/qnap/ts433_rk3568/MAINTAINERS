@@ -1,7 +1,7 @@
 QNAP-TS433
 M:	Heiko Stuebner <heiko@sntech.de>
 S:	Maintained
-F:	board/qnap/ts433/
+F:	board/qnap/ts433_rk3568/
 F:	doc/board/qnap/
 F:	include/configs/qnap_ts433.h
 F:	configs/qnap-ts433-rk3568_defconfig

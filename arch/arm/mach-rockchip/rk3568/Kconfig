@@ -76,7 +76,7 @@ source "board/hardkernel/odroid_m1/Kconfig"
 source "board/hardkernel/odroid_m1s/Kconfig"
 source "board/pine64/quartz64_rk3566/Kconfig"
 source "board/powkiddy/x55/Kconfig"
-source "board/qnap/ts433/Kconfig"
+source "board/qnap/ts433_rk3568/Kconfig"
 source "board/radxa/zero3-rk3566/Kconfig"
 source "board/xunlong/orangepi-3b-rk3566/Kconfig"
 
