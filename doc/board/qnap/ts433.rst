@@ -36,7 +36,7 @@ modification and also a new maskrom downloader can be build:
 
 .. code-block:: bash
 
-    $ tools/ddrbin_tool rk3568 tools/ddrbin_param.txt bin/rk35/rk3568_ddr_1560MHz_v1.21.bin
+    $ tools/ddrbin_tool.py rk3568 tools/ddrbin_param.txt bin/rk35/rk3568_ddr_1560MHz_v1.23.bin
     $ tools/boot_merger RKBOOT/RK3568MINIALL.ini
 
 Building U-Boot
@@ -45,8 +45,8 @@ Building U-Boot
 .. code-block:: bash
 
     $ export CROSS_COMPILE=aarch64-linux-gnu-
-    $ export BL31=../rkbin/bin/rk35/rk3568_bl31_v1.34.elf
-    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.21.bin
+    $ export BL31=../rkbin/bin/rk35/rk3568_bl31_v1.45.elf
+    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.23.bin
     $ make qnap-ts433-rk3568_defconfig
     $ make
 
@@ -87,5 +87,5 @@ example as package of that name in Debian-based distributions:
 
 .. code-block:: bash
 
-    $ rkdeveloptool db rk356x_spl_loader_v1.21.113.bin
+    $ rkdeveloptool db rk356x_spl_loader_v1.23.114.bin
     $ rkdeveloptool wl 64 u-boot-rockchip.bin
