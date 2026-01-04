@@ -1,0 +1,55 @@
+.. SPDX-License-Identifier: GPL-2.0+
+
+U-Boot for Qnap TS133 Devices
+=============================
+
+This allows U-Boot to boot the Qnap TS133 NAS
+
+The device is mostly similar to the TS233/TS433 variants in terms of its
+basic peripheral setup, but there are some key differences:
+
+- Based around RK3566 instead of RK3568
+- Only has 1 USB2 and 1 USB3 port on the backside
+
+Please follow the TS433 steps but with the following changes.
+
+Preparing the serial
+--------------------
+
+Due to different DDR speeds a different binary must be modified.
+Additionally while the vendor firmware was running v1.18 of the 1056MHz
+DDR-init, at least the most recent v1.23 was not able to successfully
+initialize the DDR. Instead the the 920MHz variant should be used for now.
+So the command to run will be
+
+.. code-block:: bash
+
+    $ tools/ddrbin_tool.py rk3566 tools/ddrbin_param.txt bin/rk35/rk3566_ddr_920MHz_v1.23.bin
+    $ tools/boot_merger RKBOOT/RK3566MINIALL.ini
+
+Building U-Boot
+---------------
+
+Due to the different USB port setup, the TS133 needs its own devicetree even
+in U-Boot, so has its own config for this:
+
+.. code-block:: bash
+
+    $ export CROSS_COMPILE=aarch64-linux-gnu-
+    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3566_ddr_920MHz_v1.23.bin
+    $ make qnap-ts133-rk3566_defconfig
+    $ make
+
+This will build ``u-boot-rockchip.bin`` which can be written to the
+on-board eMMC.
+
+Image installation
+------------------
+
+Of the two ports on the front of its mainboard, the serial port is the
+right (device is lying on its side) or lower one (device is standing).
+
+The maskrom jumper header is located next to the fan and marked as
+"MASKROM RECOVERY", which is slightly obscured by the metal frame.
+
+The USB-port to use is the black USB2 port on the backside.

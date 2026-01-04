@@ -4,7 +4,9 @@ S:	Maintained
 F:	board/qnap/tsx33_rk356x/
 F:	doc/board/qnap/
 F:	include/configs/qnap_tsx33.h
+F:	configs/qnap-ts133-rk3566_defconfig
 F:	configs/qnap-ts233-rk3568_defconfig
 F:	configs/qnap-ts433-rk3568_defconfig
+F:	arch/arm/dts/rk3566-qnap-ts133-u-boot.dtsi
 F:	arch/arm/dts/rk3568-qnap-ts233-u-boot.dtsi
 F:	arch/arm/dts/rk3568-qnap-ts433-u-boot.dtsi
