@@ -46,7 +46,7 @@ Building U-Boot
 
     $ export CROSS_COMPILE=aarch64-linux-gnu-
     $ export BL31=../rkbin/bin/rk35/rk3568_bl31_v1.34.elf
-    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1056MHz_v1.13.bin
+    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.21.bin
     $ make qnap-ts433-rk3568_defconfig
     $ make
 
