@@ -1,12 +1,12 @@
-if TARGET_QNAP_TS433_RK3568
+if TARGET_QNAP_TSX33_RK356X
 
 config SYS_BOARD
-	default "ts433_rk3568"
+	default "tsx33_rk356x"
 
 config SYS_VENDOR
 	default "qnap"
 
 config SYS_CONFIG_NAME
-	default "ts433_rk3568"
+	default "tsx33_rk356x"
 
 endif
