@@ -85,7 +85,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		"Q0AM0",
 		11,
 		"TS233",
-		NULL, /* not yet supported */
+		DTB_DIR "rk3568-qnap-ts233.dtb",
 	},
 	[Q0AJ0_Q0AM0_11_10] = {
 		"Q0AJ0",
@@ -93,7 +93,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		"Q0AM0",
 		10,
 		"TS233",
-		NULL, /* not yet supported */
+		DTB_DIR "rk3568-qnap-ts233.dtb",
 	},
 	[Q0B20_Q0AW0_12_10] = {
 		"Q0B20",

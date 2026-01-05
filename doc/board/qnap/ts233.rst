@@ -1,0 +1,37 @@
+.. SPDX-License-Identifier: GPL-2.0+
+
+U-Boot for Qnap TS233 Devices
+=============================
+
+This allows U-Boot to boot the Qnap TS233 NAS
+
+The device is similar to the TS433 in terms of its basic peripheral setup
+of SoC, DDR, EMMC, 3 USB-ports, 1G network interface, SoC-SATA ports,
+serial and maskrom access.
+
+Please follow the TS433 steps but with the following changes.
+
+Building U-Boot
+---------------
+
+The TS233 can just run the TS433 U-Boot binary, but if a separate binary
+should be build, the following command will do so:
+
+.. code-block:: bash
+
+    $ export CROSS_COMPILE=aarch64-linux-gnu-
+    $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.23.bin
+    $ make qnap-ts233-rk3568_defconfig
+    $ make
+
+This will build ``u-boot-rockchip.bin`` which can be written to the
+on-board eMMC.
+
+Image installation
+------------------
+
+The serial port is located next to the CPU and labeled "SOC_UART", while
+the maskrom jumper header is located in the smaller cutout and
+labeled "MASKROM RECOVERY".
+
+The USB port to use is the one located in the front of the device.
