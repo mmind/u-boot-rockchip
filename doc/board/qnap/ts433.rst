@@ -39,16 +39,42 @@ modification and also a new maskrom downloader can be build:
     $ tools/ddrbin_tool.py rk3568 tools/ddrbin_param.txt bin/rk35/rk3568_ddr_1560MHz_v1.23.bin
     $ tools/boot_merger RKBOOT/RK3568MINIALL.ini
 
+Get TF-A
+--------
+
+There are two possible options, pick one or the other.
+
+Prebuilt binary from Rockchip
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. prompt:: bash
+
+   $ export BL31=../rkbin/bin/rk35/rk3568_bl31_v1.45.elf
+
+Upstream
+~~~~~~~~
+
+.. prompt:: bash
+
+   git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
+   cd trusted-firmware-a
+   make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3568 bl31
+   export BL31=$PWD/build/rk3568/release/bl31/bl31.elf
+
 Building U-Boot
 ---------------
 
 .. code-block:: bash
 
     $ export CROSS_COMPILE=aarch64-linux-gnu-
-    $ export BL31=../rkbin/bin/rk35/rk3568_bl31_v1.45.elf
     $ export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3568_ddr_1560MHz_v1.23.bin
     $ make qnap-ts433-rk3568_defconfig
     $ make
+
+.. note::
+   If using upstream TF-A, one should disable ``SPL_ATF_NO_PLATFORM_PARAM`` symbol in
+   U-Boot config (via e.g. ``make CROSS_COMPILE=aarch64-linux-gnu- menuconfig``) which
+   will, among other things, enable console output in TF-A.
 
 This will build ``u-boot-rockchip.bin`` which can be written to the
 on-board eMMC.
