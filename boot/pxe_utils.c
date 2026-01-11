@@ -483,6 +483,9 @@ static void label_boot_extension(struct pxe_context *ctx,
 
 	snprintf(overlay_dir, dir_len, "%s%s", label->fdtdir ?: "", slash);
 
+	/* If extension_overlay_addr, try to generate from fdtoverlay_addr_r */
+	extension_addr_fallback();
+
 	alist_for_each(extension, extension_list) {
 		char *overlay_file;
 		ulong size;

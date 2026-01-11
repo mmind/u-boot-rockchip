@@ -43,6 +43,14 @@ int extension_remove(struct udevice *dev);
 int extension_scan(void);
 
 /**
+ * extension_addr_fallback - Generate extension_addr from fdtoverlay_addr_r
+ * fdtoverlay_addr_r is the more generic address, so use it to generate
+ * extension_addr from it, if the variable was not already set.
+ * Return: Zero on success, negative on failure.
+ */
+int extension_addr_fallback(void);
+
+/**
  * extension_apply - Apply extension board overlay to the devicetree
  * @working_fdt: Pointer to working flattened device tree
  * @size: Size of the devicetree overlay

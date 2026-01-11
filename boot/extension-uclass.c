@@ -59,6 +59,21 @@ int extension_scan(void)
 	return ops->scan(dev, extension_list);
 }
 
+int extension_addr_fallback(void)
+{
+	ulong overlay_addr;
+
+	overlay_addr = env_get_hex("extension_overlay_addr", 0);
+	if (overlay_addr)
+		return 0;
+
+	overlay_addr = env_get_hex("fdtoverlay_addr_r", 0);
+	if (!overlay_addr)
+		return -ENOENT;
+
+	return env_set_hex("extension_overlay_addr", overlay_addr);
+}
+
 int extension_apply(struct fdt_header *working_fdt, ulong size)
 {
 	struct fdt_header *blob;

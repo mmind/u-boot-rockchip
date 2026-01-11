@@ -176,6 +176,9 @@ static int distro_efi_try_bootflow_files(struct udevice *dev,
 	if (fdt_check_header(working_fdt))
 		return 0;
 
+	/* If extension_overlay_addr, try to generate from fdtoverlay_addr_r */
+	extension_addr_fallback();
+
 	overlay_addr = env_get_hex("extension_overlay_addr", 0);
 	if (!overlay_addr) {
 		log_debug("Environment extension_overlay_addr is missing\n");
