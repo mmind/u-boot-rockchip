@@ -33,6 +33,7 @@ config TARGET_POWKIDDY_X55_RK3566
 
 config TARGET_QNAP_TSX33_RK356X
 	bool "QNAP-TSx33"
+	select SUPPORT_EXTENSION_SCAN
 	help
 	  Qnap TSx33 1-to-4-bay NAS with a RK3566/RK3568 SoC.
 

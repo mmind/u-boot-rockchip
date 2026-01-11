@@ -5,6 +5,7 @@
 
 #include <dm.h>
 #include <env.h>
+#include <extension_board.h>
 #include <i2c_eeprom.h>
 #include <init.h>
 #include <net.h>
@@ -24,6 +25,7 @@ struct tsx33_model {
 	const u8 bp_pcb;
 	const char *name;
 	const char *fdtfile;
+	const char *overlayfile;
 };
 
 /*
@@ -62,6 +64,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		0,
 		"Unknown TSx33",
 		NULL,
+		NULL,
 	},
 	[Q0AI0_13] = {
 		"Q0AI0",
@@ -70,6 +73,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		0,
 		"TS133",
 		DTB_DIR "rk3566-qnap-ts133.dtb",
+		DTB_DIR "rk3566-qnap-ts133-pcb-13.dtbo",
 	},
 	[Q0AI0_11] = {
 		"Q0AI0",
@@ -78,6 +82,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		0,
 		"TS133",
 		DTB_DIR "rk3566-qnap-ts133.dtb",
+		NULL,
 	},
 	[Q0AJ0_Q0AM0_12_11] = {
 		"Q0AJ0",
@@ -86,6 +91,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		11,
 		"TS233",
 		DTB_DIR "rk3568-qnap-ts233.dtb",
+		DTB_DIR "rk3568-qnap-ts233-pcb-12-11.dtb",
 	},
 	[Q0AJ0_Q0AM0_11_10] = {
 		"Q0AJ0",
@@ -94,6 +100,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		10,
 		"TS233",
 		DTB_DIR "rk3568-qnap-ts233.dtb",
+		NULL,
 	},
 	[Q0B20_Q0AW0_12_10] = {
 		"Q0B20",
@@ -102,6 +109,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		10,
 		"TS216G",
 		NULL, /* not yet supported */
+		NULL,
 	},
 	[Q0B20_Q0B30_12_10] = {
 		"Q0B20",
@@ -110,6 +118,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		10,
 		"TS433",
 		DTB_DIR "rk3568-qnap-ts433.dtb",
+		DTB_DIR "rk3568-qnap-ts433-pcb-12-10.dtb",
 	},
 	[Q0B20_Q0B30_10_10] = {
 		"Q0B20",
@@ -118,6 +127,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		10,
 		"TS433",
 		DTB_DIR "rk3568-qnap-ts433.dtb",
+		NULL,
 	},
 	[QA0110_10] = {
 		/*
@@ -131,6 +141,7 @@ static const struct tsx33_model tsx33_models[TSX33_MODELS] = {
 		0,
 		"TS433eU",
 		NULL, /* not yet supported */
+		NULL,
 	},
 };
 
@@ -383,4 +394,37 @@ int rk_board_late_init(void)
 
 	return 0;
 }
+
+#if CONFIG_IS_ENABLED(SUPPORT_EXTENSION_SCAN)
+static int tsx33_pcb_revision_scan(struct udevice *udev,
+				   struct alist *extension_list)
+{
+	const struct tsx33_model *model;
+	struct extension revision = {0};
+
+	if (!gd->board_type)
+		return 0;
+
+	model = &tsx33_models[gd->board_type];
+
+	/* No device-revision to apply. */
+	if (!model->overlayfile)
+		return 0;
+
+	strlcpy(revision.overlay, model->overlayfile, sizeof(revision.overlay));
+	strlcpy(revision.name, "board revision", sizeof(revision.name));
+	strlcpy(revision.owner, "QNAP", sizeof(revision.owner));
+	if (!alist_add(extension_list, revision))
+		return -ENOMEM;
+
+	return 1;
+}
+
+U_BOOT_EXTENSION(tsx33_revision, tsx33_pcb_revision_scan);
+
+U_BOOT_DRVINFO(tsx33_revision) = {
+	.name = "tsx33_revision",
+};
+#endif
+
 #endif
